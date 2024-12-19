@@ -4,6 +4,7 @@ const { Sequelize, DataTypes, Model } = require('sequelize');
 const bcrypt = require('bcrypt');
 const app = express()
 app.use(express.json());
+const jwt = require('jsonwebtoken')
 
 app.use(express.json());
 
@@ -65,6 +66,8 @@ Usuario_tipo.init({
   });
   
   Usuario_tipo.belongsTo(Usuario, { foreignKey: 'id_usu' });
+
+
   (async () => {
     try {
         await sequelize.sync();
@@ -111,6 +114,31 @@ app.post('/signup', async (req, res) => {
         }  
     })
 
+
+app.post("/signin", async (req, res) => {
+    const { emailLogin, senhaLogin } = req.body
+    const u = await Usuario.findOne({
+        where: {
+            email_usu : emailLogin
+        }
+    })  
+    if(!u) {
+        res.status(401).json({mensagem: "login inválido"})
+        return
+    }
+    const senhaValida = await bcrypt.compare(senhaLogin, u.senha_usu)
+    if(!senhaValida){
+        res.status(401).json({mensagem: "senha inválida"})
+        return
+    }
+
+    const token = jwt.sign(
+        {emailLogin},
+        "chave-secreta",
+        {expiresIn: "1h"}
+    )
+    res.status(200).json({token})
+})
 
 app.listen(port, () => console.log(`Servidor aberto na porta ${port}`))
    
