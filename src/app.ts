@@ -1,10 +1,11 @@
 import express from 'express'
 require('dotenv').config()
-const { Sequelize, DataTypes, Model } = require('sequelize');
-const bcrypt = require('bcrypt');
+import { Sequelize, DataTypes, Model, UUID } from 'sequelize';
+import bcrypt from 'bcrypt';
 const app = express()
 app.use(express.json());
-const jwt = require('jsonwebtoken')
+import jwt from 'jsonwebtoken';
+import { v4 as uuidv4 } from 'uuid';
 
 app.use(express.json());
 
@@ -31,9 +32,39 @@ const sequelize = new Sequelize(DB_DATABASE!, DB_USER!, DB_PASSWORD!, {
 });
 
 
-class Usuario extends Model {}
+interface UsuarioAttributes {
+    codigo_usu: string;
+    email_usu: string;
+    senha_usu: string;
+    nome_usu?: string;
+    foto_usu?: Buffer;
+    dt_nas_usu?: Date;
+    tel_usu?: string;
+    cpf_usu?: string;
+    nome_empresa?: string;
+    foto_empresa?: Buffer;
+    tel_empresa?: string;
+    cnpj_empresa?: string;
+    localizacao_empresa?: string;
+}
+
+class Usuario extends Model<UsuarioAttributes> implements UsuarioAttributes {
+    public codigo_usu!: string;
+    public email_usu!: string;
+    public senha_usu!: string;
+    public nome_usu?: string;
+    public foto_usu?: Buffer;
+    public dt_nas_usu?: Date;
+    public tel_usu?: string;
+    public cpf_usu?: string;
+    public nome_empresa?: string;
+    public foto_empresa?: Buffer;
+    public tel_empresa?: string;
+    public cnpj_empresa?: string;
+    public localizacao_empresa?: string;
+}
 Usuario.init({
-    codigo_usu: { type: DataTypes.INTEGER, primaryKey: true, allowNull: false},
+    codigo_usu: { type: DataTypes.STRING, primaryKey: true, allowNull: false},
     email_usu: { type: DataTypes.STRING, allowNull: false, unique: true },
     senha_usu: { type: DataTypes.STRING, allowNull: false },
     nome_usu: { type: DataTypes.STRING, allowNull: true },
@@ -56,8 +87,8 @@ Usuario.init({
 
 class Usuario_tipo extends Model {}
 Usuario_tipo.init({
-    id_usu : {type: DataTypes.STRING, primaryKey: true, foreignKey:true , allowNull: false},
-    id_tipo : {type: DataTypes.INTEGER, primaryKey: true, foreignKey:true, allowNull: false}
+    id_usu : {type: DataTypes.STRING, primaryKey: true, allowNull: false, references: { model:Usuario, key: 'codigo_usu'}},
+    id_tipo : {type: DataTypes.INTEGER, primaryKey: true, allowNull: false}
   }, {
     sequelize,
     modelName: 'Usuario_tipo',
@@ -80,11 +111,11 @@ Usuario_tipo.init({
 app.post('/signup', async (req, res) => {
     const transaction = await sequelize.transaction()
     try{
-        const { codigo_usu, email_usu, senha_usu, nome_usu, foto_usu, dt_nas_usu, tel_usu, cpf_usu, nome_empresa, foto_empresa, tel_empresa, cnpj_empresa, localizacao_empresa, id_tipo} = req.body
+        const { email_usu, senha_usu, nome_usu, foto_usu, dt_nas_usu, tel_usu, cpf_usu, nome_empresa, foto_empresa, tel_empresa, cnpj_empresa, localizacao_empresa, id_tipo} = req.body
         const criptografada = await bcrypt.hash(senha_usu, 10)
-
+        const codigo_gerado = uuidv4()
         const usuario = await Usuario.create({
-            codigo_usu,
+            codigo_usu: codigo_gerado,
             email_usu,
             senha_usu: criptografada,
             nome_usu,
@@ -100,7 +131,7 @@ app.post('/signup', async (req, res) => {
         }, {transaction});
 
         const usuario_tipo = await Usuario_tipo.create({
-            id_usu: codigo_usu,
+            id_usu: codigo_gerado,
             id_tipo
         }, {transaction})
 
@@ -126,7 +157,7 @@ app.post("/signin", async (req, res) => {
         res.status(401).json({mensagem: "login inválido"})
         return
     }
-    const senhaValida = await bcrypt.compare(senhaLogin, u.senha_usu)
+    const senhaValida = u && await bcrypt.compare(senhaLogin, u.senha_usu)
     if(!senhaValida){
         res.status(401).json({mensagem: "senha inválida"})
         return
