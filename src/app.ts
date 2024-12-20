@@ -1,100 +1,19 @@
 import express from 'express'
-require('dotenv').config()
-import { Sequelize, DataTypes, Model, UUID } from 'sequelize';
+import 'dotenv/config'
 import bcrypt from 'bcrypt';
 const app = express()
 app.use(express.json());
 import jwt from 'jsonwebtoken';
 import { v4 as uuidv4 } from 'uuid';
+import Usuario from './models/Usuario';
+import Usuario_tipo from './models/Usuario_tipo';
+import sequelize from './config/database';
 
 app.use(express.json());
 
 const {
-    port,
-    DB_USER,
-    DB_PASSWORD,
-    DB_HOST,
-    DB_DATABASE,
-    DB_PORT
+    PORT
   } = process.env;
-
-const sequelize = new Sequelize(DB_DATABASE!, DB_USER!, DB_PASSWORD!, {
-    host: DB_HOST,
-    port: Number(DB_PORT),
-    dialect: 'mysql',
-    logging: false,
-    dialectOptions: {
-        ssl: {
-            require: true,
-            rejectUnauthorized: false,
-        },
-    },
-});
-
-
-interface UsuarioAttributes {
-    codigo_usu: string;
-    email_usu: string;
-    senha_usu: string;
-    nome_usu?: string;
-    foto_usu?: Buffer;
-    dt_nas_usu?: Date;
-    tel_usu?: string;
-    cpf_usu?: string;
-    nome_empresa?: string;
-    foto_empresa?: Buffer;
-    tel_empresa?: string;
-    cnpj_empresa?: string;
-    localizacao_empresa?: string;
-}
-
-class Usuario extends Model<UsuarioAttributes> implements UsuarioAttributes {
-    public codigo_usu!: string;
-    public email_usu!: string;
-    public senha_usu!: string;
-    public nome_usu?: string;
-    public foto_usu?: Buffer;
-    public dt_nas_usu?: Date;
-    public tel_usu?: string;
-    public cpf_usu?: string;
-    public nome_empresa?: string;
-    public foto_empresa?: Buffer;
-    public tel_empresa?: string;
-    public cnpj_empresa?: string;
-    public localizacao_empresa?: string;
-}
-Usuario.init({
-    codigo_usu: { type: DataTypes.STRING, primaryKey: true, allowNull: false},
-    email_usu: { type: DataTypes.STRING, allowNull: false, unique: true },
-    senha_usu: { type: DataTypes.STRING, allowNull: false },
-    nome_usu: { type: DataTypes.STRING, allowNull: true },
-    foto_usu: { type: DataTypes.BLOB, allowNull: true },
-    dt_nas_usu: { type: DataTypes.DATE, allowNull: true },
-    tel_usu: { type: DataTypes.STRING, allowNull: true },
-    cpf_usu: { type: DataTypes.STRING, allowNull: true, unique: true},
-    nome_empresa: { type: DataTypes.STRING, allowNull: true},
-    foto_empresa: { type: DataTypes.BLOB, allowNull:true},
-    tel_empresa: { type: DataTypes.STRING, allowNull:true},
-    cnpj_empresa: { type: DataTypes.STRING, allowNull: true},
-    localizacao_empresa: {type: DataTypes.STRING, allowNull:true}
-}, {
-    sequelize,
-    modelName: 'Usuario',
-    tableName: 'USUARIO',
-    timestamps: false
-  });
-
-
-class Usuario_tipo extends Model {}
-Usuario_tipo.init({
-    id_usu : {type: DataTypes.STRING, primaryKey: true, allowNull: false, references: { model:Usuario, key: 'codigo_usu'}},
-    id_tipo : {type: DataTypes.INTEGER, primaryKey: true, allowNull: false}
-  }, {
-    sequelize,
-    modelName: 'Usuario_tipo',
-    tableName: 'USUARIO_TIPO',
-    timestamps: false
-  });
   
   Usuario_tipo.belongsTo(Usuario, { foreignKey: 'id_usu' });
 
@@ -171,5 +90,5 @@ app.post("/signin", async (req, res) => {
     res.status(200).json({token})
 })
 
-app.listen(port, () => console.log(`Servidor aberto na porta ${port}`))
+app.listen(PORT, () => console.log(`Servidor aberto na porta ${PORT}`))
    
