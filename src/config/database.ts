@@ -7,7 +7,7 @@ const {
     DB_HOST,
     DB_DATABASE,
     DB_PORT
-  } = process.env;
+} = process.env;
 
 const sequelize = new Sequelize(DB_DATABASE!, DB_USER!, DB_PASSWORD!, {
     host: DB_HOST,
