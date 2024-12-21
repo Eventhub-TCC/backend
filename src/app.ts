@@ -1,19 +1,25 @@
-import express from 'express'
-import 'dotenv/config'
+import 'dotenv/config';
+import express from 'express';
+import sequelize from './config/database';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import Usuario from './models/Usuario';
 import UsuarioTipo from './models/UsuarioTipo';
-import sequelize from './config/database';
+import cors from 'cors'
 
 const app = express();
 
-app.use(express.json());
-
 const {
     SERVER_PORT,
-    JWT_SECRET
+    JWT_SECRET,
+    URL_FRONTEND
 } = process.env;
+    
+app.use(cors({origin:URL_FRONTEND}))
+
+app.use(express.json());
+
+
   
 (async () => {
     try {
@@ -27,12 +33,13 @@ const {
 app.post('/signup', async (req, res) => {
     const transaction = await sequelize.transaction()
     try{
-        const { emailUsu, senhaUsu, nomeUsu, fotoUsu, dtNasUsu, telUsu, cpfUsu, nomeEmpresa, fotoEmpresa, telEmpresa, cnpjEmpresa, localizacaoEmpresa, idTipo} = req.body
+        const { emailUsu, senhaUsu, nomeUsu, sobrenomeUsu, fotoUsu, dtNasUsu, telUsu, cpfUsu, nomeEmpresa, fotoEmpresa, telEmpresa, cnpjEmpresa, localizacaoEmpresa, idTipo} = req.body
         const criptografada = await bcrypt.hash(senhaUsu, 10)
         const usuario = await Usuario.create({
             emailUsu,
             senhaUsu: criptografada,
             nomeUsu,
+            sobrenomeUsu,
             fotoUsu,
             dtNasUsu,
             telUsu,
@@ -56,8 +63,8 @@ app.post('/signup', async (req, res) => {
     }   
     catch (error) {
         await transaction.rollback();
-        console.error(error);
-        res.status(409).json({ error: 'Erro ao cadastrar Usuario' });
+        console.error('Erro ao cadastrar usuario');
+        res.status(409).json({ error: 'Erro ao cadastrar usuario' });
     }  
 })
 
@@ -88,7 +95,7 @@ app.post("/signin", async (req, res) => {
         res.status(200).json({"mensagem": "Usuario autenticado com sucesso!", token})
     }
     catch(error){
-        console.error(error)
+        console.error('Erro ao autenticar usuario')
         res.status(500).json({mensagem: "Erro ao autenticar usuario"})
     }
 })

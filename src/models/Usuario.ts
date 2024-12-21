@@ -6,6 +6,7 @@ class Usuario extends Model{
     declare emailUsu: string;
     declare senhaUsu: string;
     declare nomeUsu: string;
+    declare sobrenomeUso: string;
     declare fotoUsu: Buffer;
     declare dt_nasUsu: Date;
     declare telUsu: string;
@@ -36,6 +37,10 @@ Usuario.init({
     nomeUsu: { 
         type: DataTypes.STRING, 
         allowNull: true 
+    },
+    sobrenomeUsu:{
+        type: DataTypes.STRING,
+        allowNull: false
     },
     fotoUsu: { 
         type: DataTypes.BLOB, 

@@ -1,6 +1,7 @@
 import { DataTypes, Model } from 'sequelize';
 import sequelize from '../config/database';
 import Usuario from './Usuario'; 
+import Tipo from './Tipo';
 
 class UsuarioTipo extends Model {
   declare idUsu: string;
@@ -12,15 +13,19 @@ UsuarioTipo.init({
       type: DataTypes.UUID, 
       primaryKey: true, 
       allowNull: false, 
-      references: { 
-        model:Usuario, 
-        key: 'codigo_usu'
+      references:{
+        model:Usuario,
+        key:'codigo_usu'
       }
     },
     idTipo : {
       type: DataTypes.INTEGER, 
       primaryKey: true, 
-      allowNull: false
+      allowNull: false,
+      references:{
+        model:Tipo,
+        key:'id_tipo'
+      }
     }
   }, {
     sequelize,
@@ -30,6 +35,8 @@ UsuarioTipo.init({
     underscored: true
 });
 
-UsuarioTipo.belongsTo(Usuario, { foreignKey: 'id_usu' });
+Usuario.belongsToMany(Tipo,{through:UsuarioTipo,foreignKey:'idUsu'})
+Tipo.belongsToMany(Usuario,{through:UsuarioTipo,foreignKey:'idTipo'})
+
 
 export default UsuarioTipo
