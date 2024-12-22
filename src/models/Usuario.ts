@@ -1,12 +1,13 @@
 import { DataTypes, Model } from 'sequelize';
-import sequelize from '../config/database';
+import { sequelize } from '../config/database';
+import { criptografarSenha } from '../utils/criptografiaSenha';
 
 class Usuario extends Model{
     declare codigoUsu: string;
     declare emailUsu: string;
     declare senhaUsu: string;
     declare nomeUsu: string;
-    declare sobrenomeUso: string;
+    declare sobrenomeUsu: string;
     declare fotoUsu: Buffer;
     declare dt_nasUsu: Date;
     declare telUsu: string;
@@ -73,6 +74,7 @@ Usuario.init({
     },
     cnpjEmpresa: { 
         type: DataTypes.STRING, 
+        unique: true,
         allowNull: true
     },
     localizacaoEmpresa: {
@@ -84,7 +86,15 @@ Usuario.init({
     modelName: 'Usuario',
     tableName: 'USUARIO',
     timestamps: false,
-    underscored: true
+    underscored: true,
+    hooks: {
+        beforeCreate: async (usuario: Usuario) => { 
+            usuario.senhaUsu = await criptografarSenha(usuario.senhaUsu) 
+        },
+        beforeUpdate: async (usuario: Usuario) => { 
+            usuario.senhaUsu = await criptografarSenha(usuario.senhaUsu) 
+        }
+    }
 });
 
 export default Usuario

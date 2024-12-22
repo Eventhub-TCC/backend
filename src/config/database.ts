@@ -22,4 +22,16 @@ const sequelize = new Sequelize(DB_DATABASE!, DB_USER!, DB_PASSWORD!, {
     },
 });
 
-export default sequelize;
+const sincronizarBanco = async () => {
+    try {
+        await sequelize.sync();
+        console.log('Modelos sincronizados com o banco de dados.');
+    } catch (error) {
+        console.error('Erro ao sincronizar modelos:', error);
+    }
+}
+
+export { 
+    sequelize, 
+    sincronizarBanco 
+};
