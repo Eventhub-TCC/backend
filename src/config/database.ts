@@ -13,7 +13,7 @@ const sequelize = new Sequelize(DB_DATABASE!, DB_USER!, DB_PASSWORD!, {
     host: DB_HOST,
     port: Number(DB_PORT),
     dialect: 'mysql',
-    logging: false,
+    logging: true,
     dialectOptions: {
         ssl: {
             require: true,

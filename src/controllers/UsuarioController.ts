@@ -28,7 +28,7 @@ export default class UsuarioController {
         }   
         catch (error: any) {
             await transaction.rollback();
-            console.error("Erro ao cadastrar usuario");
+            console.error("Erro ao cadastrar usuario",error);
             res.status(409).json({ error: 'Erro ao cadastrar usuario' });
         }  
     }

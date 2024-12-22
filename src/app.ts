@@ -3,6 +3,7 @@ import express from 'express';
 import { sincronizarBanco } from './config/database';
 import cors from 'cors';
 import usuarioRoute from './routes/usuarioRoute';
+import eventoRoute from './routes/eventoRoute';
 
 const app = express();
 
@@ -14,6 +15,7 @@ const {
 app.use(cors({origin:URL_FRONTEND}));
 app.use(express.json());
 app.use('/users', usuarioRoute);
+app.use('/events', eventoRoute);
 
 sincronizarBanco();
 
