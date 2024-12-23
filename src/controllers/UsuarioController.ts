@@ -6,6 +6,7 @@ import UsuarioTipo from "../models/UsuarioTipo";
 import UsuarioDao from "../dao/UsuarioDao";
 import UsuarioTipoDao from "../dao/UsuarioTipoDao";
 import { compararSenha } from "../utils/criptografiaSenha";
+import enviarEmailRecuperacaoSenha from "../utils/enviaEmail";
 
 export default class UsuarioController {
     private usuarioDao = new UsuarioDao();
@@ -72,7 +73,8 @@ export default class UsuarioController {
             usuario.tokenRedefinicaoSenha = token;
             usuario.tokenUtilizado = false;
             await this.usuarioDao.atualizarUsuario(usuario);
-            res.status(200);
+            await enviarEmailRecuperacaoSenha(email, usuario.nomeUsu, token);
+            res.status(200).json({mensagem: "Email de recuperação enviado com sucesso!"});
         }
         catch(error){
             console.error('Erro ao enviar email');
