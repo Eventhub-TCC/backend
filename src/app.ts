@@ -11,11 +11,11 @@ const {
     SERVER_PORT,
     URL_FRONTEND
 } = process.env;
-    
+
 app.use(cors({origin:URL_FRONTEND}));
 app.use(express.json());
 app.use('/users', usuarioRoute);
-app.use('/events', eventoRoute);
+app.use('/users', eventoRoute);
 
 sincronizarBanco();
 

@@ -15,6 +15,20 @@ export default class EventoDao{
         return evento;
     }
 
+    public listarEventos = async (idUsuario: string):Promise<Evento[]> =>{
+        const eventos: Evento[] = await Evento.findAll({
+            where: {
+                idUsuario
+            }
+        });
+        return eventos;
+    }
+
+    public buscarEventoporId = async (idEvento: string):Promise<Evento | null> =>{
+        const evento: Evento | null = await Evento.findByPk(idEvento);
+        return evento;
+    }
+
     public deletarEvento = async (idUsuario:string) => {
         await Evento.destroy({
             where: {

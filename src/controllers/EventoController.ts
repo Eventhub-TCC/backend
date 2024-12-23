@@ -17,6 +17,40 @@ export default class EventoController {
         }
     }
 
+    public listarEventos = async (req: Request, res: Response) =>{
+        try{
+            const { idUsuario } = req.params;
+            const eventos = await this.eventoDao.listarEventos(idUsuario);
+            if (eventos.length === 0){
+                const mensagem = "Nenhum evento encontrado";
+                res.status(404).json({mensagem});
+                return;
+            }
+            res.status(200).json(eventos);
+        }
+        catch(error){
+            console.error('Erro ao listar eventos', error);
+            res.status(500).json({mensagem: "Erro ao listar eventos"});
+        }
+    }
+
+    public buscarEventoporId = async (req: Request, res: Response) =>{
+        try{
+            const { idEvento } = req.params;
+            const evento = await this.eventoDao.buscarEventoporId(idEvento);
+            if (!evento){
+                const mensagem = "Evento não encontrado";
+                res.status(404).json({mensagem});
+                return;
+            }
+            res.status(200).json(evento);
+        }
+        catch(error){
+            console.error('Erro ao buscar evento', error);
+            res.status(500).json({mensagem: "Erro ao buscar evento"});
+        }
+    }
+
     public deletarEvento = async (req: Request, res: Response) => {
         try{
             const { idEvento } = req.params; 
