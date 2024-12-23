@@ -1,6 +1,5 @@
 import { Request, Response } from "express";
 import EventoDao from "../dao/EventoDao";
-import Evento from "../models/Evento";
 
 export default class EventoController {
 
@@ -8,8 +7,8 @@ export default class EventoController {
 
     public cadastrarEvento = async (req: Request, res: Response) =>{
         try{
-            const { numeroConvidados, localEvento, horaInicio, horaFim, nomeEvento, dataEvento, idTipoEvento, idUsuario } = req.body;
-            await this.eventoDao.cadastrarEvento(numeroConvidados, localEvento, horaInicio, horaFim, nomeEvento, dataEvento, idTipoEvento, idUsuario)
+            const { localEvento, horaInicio, horaFim, nomeEvento, dataEvento, idTipoEvento, idUsuario } = req.body;
+            await this.eventoDao.cadastrarEvento(localEvento, horaInicio, horaFim, nomeEvento, dataEvento, idTipoEvento, idUsuario)
             res.status(201).json({ message: 'Evento cadastrado com sucesso!'});
         }
         catch(error){

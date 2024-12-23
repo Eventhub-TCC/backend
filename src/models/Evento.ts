@@ -25,7 +25,8 @@ Evento.init(
         },
         numeroConvidados:{
             type:DataTypes.INTEGER,
-            allowNull:false
+            allowNull:false,
+            defaultValue: 0
         },
         localEvento:{
             type:DataTypes.STRING,
@@ -44,7 +45,7 @@ Evento.init(
             allowNull:false
         },
         dataEvento:{
-            type:DataTypes.DATE,
+            type:DataTypes.DATEONLY,
             allowNull:false
         },
         idTipoEvento:{

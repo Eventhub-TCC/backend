@@ -21,11 +21,12 @@ export default class UsuarioDao{
         return usuario;
     }
 
-    public async buscarUsuarioPorEmail(emailUsu: string){
+    public async buscarUsuarioPorEmail(emailUsu: string, transaction: Transaction | null = null){
         const usuario: Usuario | null = await Usuario.findOne({
             where: {
                 emailUsu
-            }
+            },
+            transaction
         });
         return usuario;
     }

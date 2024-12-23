@@ -1,9 +1,9 @@
+import { Transaction } from "sequelize";
 import Evento from "../models/Evento";
 
 export default class EventoDao{
-    cadastrarEvento = async (numeroConvidados:number,localEvento:string,horaInicio:Date,horaFim:Date,nomeEvento:string,dataEvento:Date,idTipoEvento:number,idUsuario:string)=>{
+    public cadastrarEvento = async (localEvento:string,horaInicio:Date,horaFim:Date,nomeEvento:string,dataEvento:Date,idTipoEvento:number,idUsuario:string, transaction: Transaction | null = null)=>{
        const evento: Evento = await Evento.create({
-            numeroConvidados,
             localEvento,
             horaInicio,
             horaFim,
@@ -11,7 +11,7 @@ export default class EventoDao{
             dataEvento,
             idTipoEvento,
             idUsuario
-        });
+        }, transaction ? {transaction} : {});
         return evento;
     }
 }
