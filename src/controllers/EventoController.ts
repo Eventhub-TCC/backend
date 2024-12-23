@@ -16,4 +16,17 @@ export default class EventoController {
             res.status(500).json({mensagem: "Erro ao cadastrar evento"});
         }
     }
+
+    public deletarEvento = async (req: Request, res: Response) => {
+        try{
+            const { idEvento } = req.params; 
+        
+            await this.eventoDao.deletarEvento(idEvento)
+            res.status(200).json({mensagem: "Evento deletado com sucesso"});
+        }
+        catch (error) {
+            console.error('Erro ao deletar evento', error);
+            res.status(500).json({ mensagem: "Erro ao deletar evento" });
+        }
+    }
 }

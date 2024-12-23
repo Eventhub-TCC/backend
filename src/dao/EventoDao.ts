@@ -14,4 +14,13 @@ export default class EventoDao{
         }, transaction ? {transaction} : {});
         return evento;
     }
+
+    public deletarEvento = async (idUsuario:string) => {
+        await Evento.destroy({
+            where: {
+                idUsuario 
+            }
+        })
+    }
 }
+
