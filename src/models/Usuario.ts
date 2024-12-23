@@ -85,6 +85,7 @@ Usuario.init({
     },
     tokenRedefinicaoSenha: {
         type: DataTypes.STRING,
+        unique: true,
         allowNull: true
     },
     tokenUtilizado: {

@@ -81,4 +81,39 @@ export default class UsuarioController {
             res.status(500).json({mensagem: "Erro ao enviar email"});
         }
     }
+
+    public verificarTokenRedefinicaoSenha = async (req: Request, res: Response) => {
+        try{
+            const { token } = req.body;
+            const usuario: Usuario | null = await this.usuarioDao.buscarUsuarioPorTokenRedefinicaoSenha(token);
+            if(!usuario || usuario.tokenUtilizado){
+                res.status(401).json({mensagem: "Token inválido"});
+                return;
+            }
+            res.status(200).json({mensagem: "Token válido"});
+        }
+        catch(error){
+            console.error('Erro ao verificar token');
+            res.status(500).json({mensagem: "Erro ao verificar token"});
+        }
+    }
+
+    public redefinirSenha = async (req: Request, res: Response) => {
+        try{
+            const { token, novaSenha } = req.body;
+            const usuario: Usuario | null = await this.usuarioDao.buscarUsuarioPorTokenRedefinicaoSenha(token);
+            if(!usuario || usuario.tokenUtilizado){
+                res.status(401).json({mensagem: "Token inválido"});
+                return;
+            }
+            usuario.senhaUsu = novaSenha;
+            usuario.tokenUtilizado = true;
+            await this.usuarioDao.atualizarUsuario(usuario);
+            res.status(200).json({mensagem: "Senha redefinida com sucesso!"});
+        }
+        catch(error){
+            console.error('Erro ao redefinir senha');
+            res.status(500).json({mensagem: "Erro ao redefinir senha"});
+        }
+    }
 }

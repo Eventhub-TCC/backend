@@ -90,7 +90,7 @@ const enviarEmailRecuperacaoSenha = async (email: string, nomeDestinatario: stri
                         <p>Olá, ${nomeDestinatario}.</p>
                         <p>Recebemos uma solicitação de redefinição de senha da sua conta do EventHub. Clique no botão abaixo para redefinir:</p>
                         <div class="container-botao">
-                            <a href="${URL_FRONTEND}/resetar-senha?token=${token}" target="_blank" style="color: #ffffff;" class="botao">Redefinir</a>
+                            <a href="${URL_FRONTEND}/redefinir-senha?token=${token}" target="_blank" style="color: #ffffff;" class="botao">Redefinir</a>
                         </div>
                     </div>
                     <div class="rodape">

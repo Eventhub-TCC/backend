@@ -34,4 +34,14 @@ export default class UsuarioDao{
         });
         return usuario;
     }
+
+    public async buscarUsuarioPorTokenRedefinicaoSenha(tokenRedefinicaoSenha: string, transaction: Transaction | null = null){
+        const usuario: Usuario | null = await Usuario.findOne({
+            where: {
+                tokenRedefinicaoSenha
+            },
+            transaction
+        });
+        return usuario;
+    }
 }
