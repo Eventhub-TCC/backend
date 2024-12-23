@@ -49,14 +49,34 @@ export default class UsuarioController {
         
             const token = jwt.sign(
                 {email},
-                process.env.JWT_SECRET!,
+                process.env.JWT_SECRET_LOGIN!,
                 {expiresIn: "1h"}
             );
-            res.status(200).json({"mensagem": "Usuario autenticado com sucesso!", token});
+            res.status(200).json({mensagem: "Usuario autenticado com sucesso!", token});
         }
         catch(error){
             console.error('Erro ao autenticar usuario');
             res.status(500).json({mensagem: "Erro ao autenticar usuario"});
+        }
+    }
+
+    public esqueciSenha = async (req: Request, res: Response) => {
+        try{
+            const { email } = req.body;
+            const usuario: Usuario | null = await this.usuarioDao.buscarUsuarioPorEmail(email);
+            if(!usuario) {
+                res.status(404).json({mensagem: "E-mail não encontrado"});
+                return;
+            }
+            const token = jwt.sign({email}, process.env.JWT_SECRET_RESET_PASSWORD!, {expiresIn: "15m"});
+            usuario.tokenRedefinicaoSenha = token;
+            usuario.tokenUtilizado = false;
+            await this.usuarioDao.atualizarUsuario(usuario);
+            res.status(200);
+        }
+        catch(error){
+            console.error('Erro ao enviar email');
+            res.status(500).json({mensagem: "Erro ao enviar email"});
         }
     }
 }

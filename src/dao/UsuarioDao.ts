@@ -21,6 +21,10 @@ export default class UsuarioDao{
         return usuario;
     }
 
+    public async atualizarUsuario(usuario: Usuario, transaction: Transaction | null = null){
+        return await usuario.save(transaction ? {transaction} : {});
+    }
+
     public async buscarUsuarioPorEmail(emailUsu: string, transaction: Transaction | null = null){
         const usuario: Usuario | null = await Usuario.findOne({
             where: {

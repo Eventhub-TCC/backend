@@ -17,6 +17,8 @@ class Usuario extends Model{
     declare telEmpresa: string;
     declare cnpjEmpresa: string;
     declare localizacaoEmpresa: string;
+    declare tokenRedefinicaoSenha: string;
+    declare tokenUtilizado: boolean;
 }
 
 Usuario.init({
@@ -80,6 +82,14 @@ Usuario.init({
     localizacaoEmpresa: {
         type: DataTypes.STRING, 
         allowNull:true
+    },
+    tokenRedefinicaoSenha: {
+        type: DataTypes.STRING,
+        allowNull: true
+    },
+    tokenUtilizado: {
+        type: DataTypes.BOOLEAN,
+        allowNull: true
     }
 }, {
     sequelize,
