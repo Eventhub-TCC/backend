@@ -29,6 +29,24 @@ export default class EventoDao{
         return evento;
     }
 
+    public editarEvento = async (idEvento: string, localEvento: string, horaInicio: Date, horaFim: Date, nomeEvento: string, dataEvento: Date, idTipoEvento: number, idUsuario: string, transaction: Transaction | null = null): Promise<[number, Evento[]]> => {
+        const resultado = await Evento.update({
+            localEvento, 
+            horaInicio, 
+            horaFim, 
+            nomeEvento, 
+            dataEvento, 
+            idTipoEvento, 
+            idUsuario
+        }, {
+            where: { idEvento }, 
+            transaction,
+            returning: true 
+        }); 
+        return resultado; 
+    }
+
+
     public deletarEvento = async (idUsuario:string) => {
         await Evento.destroy({
             where: {

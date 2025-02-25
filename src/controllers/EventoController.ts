@@ -51,6 +51,25 @@ export default class EventoController {
         }
     }
 
+    public editarEvento = async (req: Request, res: Response) =>{
+        try{
+            const { idEvento } = req.params;
+            const { localEvento, horaInicio, horaFim, nomeEvento, dataEvento, idTipoEvento, idUsuario } = req.body; 
+            const resultado = await this.eventoDao.editarEvento(idEvento, localEvento, horaInicio, horaFim, nomeEvento, dataEvento, idTipoEvento, idUsuario);
+            if (resultado[0] === 0){
+                const mensagem = "Evento não encontrado";
+                res.status(404).json({mensagem});
+                return;
+            }
+            res.status(200).json({mensagem: "Evento editado com sucesso"});
+        }
+        catch(error){
+            console.error('Erro ao editar evento', error);
+            res.status(500).json({mensagem: "Erro ao editar evento"});
+        }
+    }
+    
+
     public deletarEvento = async (req: Request, res: Response) => {
         try{
             const { idEvento } = req.params; 
