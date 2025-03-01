@@ -43,7 +43,7 @@ Usuario.init({
     },
     sobrenomeUsu:{
         type: DataTypes.STRING,
-        allowNull: false
+        allowNull: true
     },
     fotoUsu: { 
         type: DataTypes.BLOB, 

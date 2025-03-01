@@ -2,7 +2,7 @@ import { Transaction } from "sequelize";
 import Usuario from "../models/Usuario";
 
 export default class UsuarioDao{
-    public async cadastrarUsuario(emailUsu: string, senhaUsu: string, nomeUsu: string, sobrenomeUsu: string, fotoUsu: Buffer, dtNasUsu: Date, telUsu: string, cpfUsu: string, nomeEmpresa: string, fotoEmpresa: Buffer, telEmpresa: string, cnpjEmpresa: string, localizacaoEmpresa: string, transaction: Transaction | null = null){
+    public async cadastrarUsuario(emailUsu: string, senhaUsu: string, nomeUsu: string, sobrenomeUsu: string, fotoUsu: Buffer | null, dtNasUsu: Date, telUsu: string, cpfUsu: string, nomeEmpresa: string, fotoEmpresa: Buffer | null, telEmpresa: string, cnpjEmpresa: string, localizacaoEmpresa: string, transaction: Transaction | null = null){
         const usuario: Usuario = await Usuario.create({
             emailUsu,
             senhaUsu,
@@ -39,6 +39,26 @@ export default class UsuarioDao{
         const usuario: Usuario | null = await Usuario.findOne({
             where: {
                 tokenRedefinicaoSenha
+            },
+            transaction
+        });
+        return usuario;
+    }
+
+    public async buscarUsuarioPorCpf(cpfUsu: string, transaction: Transaction | null = null){
+        const usuario: Usuario | null = await Usuario.findOne({
+            where: {
+                cpfUsu
+            },
+            transaction
+        });
+        return usuario;
+    }
+
+    public async buscarUsuarioPorCnpj(cnpjEmpresa: string, transaction: Transaction | null = null){
+        const usuario: Usuario | null = await Usuario.findOne({
+            where: {
+                cnpjEmpresa
             },
             transaction
         });

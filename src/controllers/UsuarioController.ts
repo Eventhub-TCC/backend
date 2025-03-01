@@ -2,11 +2,11 @@ import { Request, Response } from "express";
 import { sequelize } from "../config/database";
 import jwt from 'jsonwebtoken';
 import Usuario from "../models/Usuario";
-import UsuarioTipo from "../models/UsuarioTipo";
 import UsuarioDao from "../dao/UsuarioDao";
 import UsuarioTipoDao from "../dao/UsuarioTipoDao";
 import { compararSenha } from "../utils/criptografiaSenha";
 import enviarEmailRecuperacaoSenha from "../utils/enviaEmail";
+import { cnpj, cpf } from "cpf-cnpj-validator";
 
 export default class UsuarioController {
     private usuarioDao = new UsuarioDao();
@@ -14,17 +14,54 @@ export default class UsuarioController {
 
     public cadastrarUsuario = async (req: Request, res: Response) => {
         const transaction = await sequelize.transaction();
+        for(let atributo in req.body){
+            if(req.body[atributo] === ''){
+                req.body[atributo] = null;
+            }
+        }
         try{
-            const { emailUsu, senhaUsu, nomeUsu, sobrenomeUsu, fotoUsu, dtNasUsu, telUsu, cpfUsu, nomeEmpresa, fotoEmpresa, telEmpresa, cnpjEmpresa, localizacaoEmpresa, idTipo} = req.body;
+            const { organizador, prestador, emailUsu, senhaUsu, nomeUsu, sobrenomeUsu, dtNasUsu, telUsu, cpfUsu, nomeEmpresa, telEmpresa, cnpjEmpresa, localizacaoEmpresa } = req.body;
 
-            const usuario: Usuario = await this.usuarioDao.cadastrarUsuario(emailUsu, senhaUsu, nomeUsu, sobrenomeUsu, fotoUsu, dtNasUsu, telUsu, cpfUsu, nomeEmpresa, fotoEmpresa, telEmpresa, cnpjEmpresa, localizacaoEmpresa, transaction);
+            const usuarioPorEmail: Usuario | null = await this.usuarioDao.buscarUsuarioPorEmail(emailUsu, transaction);
+            if(usuarioPorEmail){
+                res.status(409).json({mensagem: "E-mail já cadastrado"});
+                return;
+            }
 
-            const usuarioTipo: UsuarioTipo = await this.usuarioTipoDao.cadastrarUsuarioTipo(usuario.codigoUsu, idTipo, transaction);
-    
+            if(cpfUsu){
+                if(!cpf.isValid(cpfUsu)){
+                    res.status(400).json({mensagem: "CPF inválido"});
+                    return;
+                }
+                const usuarioPorCpf: Usuario| null = await this.usuarioDao.buscarUsuarioPorCpf(cpfUsu, transaction);
+                if(usuarioPorCpf){
+                    res.status(409).json({mensagem: "CPF já cadastrado"});
+                    return;
+                }
+            }
+
+            if(cnpjEmpresa){
+                if(!cnpj.isValid(cnpjEmpresa)){
+                    res.status(400).json({mensagem: "CNPJ inválido"});
+                    return;
+                }
+                const usuarioPorCnpj: Usuario | null = await this.usuarioDao.buscarUsuarioPorCnpj(cnpjEmpresa, transaction);
+                if(usuarioPorCnpj){
+                    res.status(409).json({mensagem: "CNPJ já cadastrado"});
+                    return;
+                }
+            }
+
+            const usuario: Usuario = await this.usuarioDao.cadastrarUsuario(emailUsu, senhaUsu, nomeUsu, sobrenomeUsu, null, dtNasUsu, telUsu, cpfUsu, nomeEmpresa, null, telEmpresa, cnpjEmpresa, localizacaoEmpresa, transaction);
+            
+            if(organizador){
+                await this.usuarioTipoDao.cadastrarUsuarioTipo(usuario.codigoUsu, 1, transaction);
+            }
+            if(prestador){
+                await this.usuarioTipoDao.cadastrarUsuarioTipo(usuario.codigoUsu, 2, transaction);
+            }
+
             await transaction.commit();
-            console.log(usuario.toJSON());
-            console.log(usuarioTipo.toJSON());
-
             res.status(201).json({ message: 'Usuario cadastrado com sucesso!' });
         }   
         catch (error: any) {
@@ -114,6 +151,62 @@ export default class UsuarioController {
         catch(error){
             console.error('Erro ao redefinir senha');
             res.status(500).json({mensagem: "Erro ao redefinir senha"});
+        }
+    }
+
+    public validarCpf = async (req: Request, res: Response) => {
+        try{
+            const { cpfUsu } = req.body;
+            if(!cpf.isValid(cpfUsu)){
+                res.status(400).json({mensagem: "CPF inválido"});
+                return;
+            }
+            const usuario: Usuario | null = await this.usuarioDao.buscarUsuarioPorCpf(cpfUsu);
+            if(usuario){
+                res.status(409).json({mensagem: "CPF já cadastrado"});
+                return;
+            }
+            res.status(200).json({mensagem: "CPF válido"});
+        }
+        catch(error){
+            console.error('Erro ao validar CPF');
+            res.status(500).json({mensagem: "Erro ao validar CPF"});
+        }
+    }
+
+    public validarCnpj = async (req: Request, res: Response) => {
+        try{
+            const { cnpjEmpresa } = req.body;
+            if(!cnpj.isValid(cnpjEmpresa)){
+                res.status(400).json({mensagem: "CNPJ inválido"});
+                return;
+            }
+            const usuario: Usuario | null = await this.usuarioDao.buscarUsuarioPorCnpj(cnpjEmpresa);
+            if(usuario){
+                res.status(409).json({mensagem: "CNPJ já cadastrado"});
+                return;
+            }
+            res.status(200).json({mensagem: "CNPJ válido"});
+        }
+        catch(error){
+            console.error('Erro ao validar CNPJ');
+            res.status(500).json({mensagem: "Erro ao validar CNPJ"});
+        }
+    }
+
+    public validarEmail = async (req: Request, res: Response) => {
+        try{
+            const { emailUsu } = req.body;
+            const usuario: Usuario | null = await this.usuarioDao.buscarUsuarioPorEmail(emailUsu);
+            if(usuario){
+                res.status(409).json({mensagem: "E-mail já cadastrado"});
+                return;
+            }
+            res.status(200).json({mensagem: "E-mail válido"});
+        }
+        catch(error){
+            console.error('Erro ao validar email');
+            res.status(500).json({mensagem: "Erro ao validar email"});
         }
     }
 }
