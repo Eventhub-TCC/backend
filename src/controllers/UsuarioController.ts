@@ -24,17 +24,20 @@ export default class UsuarioController {
 
             const usuarioPorEmail: Usuario | null = await this.usuarioDao.buscarUsuarioPorEmail(emailUsu, transaction);
             if(usuarioPorEmail){
+                await transaction.rollback();
                 res.status(409).json({mensagem: "E-mail já cadastrado"});
                 return;
             }
 
             if(cpfUsu){
                 if(!cpf.isValid(cpfUsu)){
+                    await transaction.rollback();
                     res.status(400).json({mensagem: "CPF inválido"});
                     return;
                 }
                 const usuarioPorCpf: Usuario| null = await this.usuarioDao.buscarUsuarioPorCpf(cpfUsu, transaction);
                 if(usuarioPorCpf){
+                    await transaction.rollback();
                     res.status(409).json({mensagem: "CPF já cadastrado"});
                     return;
                 }
@@ -42,11 +45,13 @@ export default class UsuarioController {
 
             if(cnpjEmpresa){
                 if(!cnpj.isValid(cnpjEmpresa)){
+                    await transaction.rollback();
                     res.status(400).json({mensagem: "CNPJ inválido"});
                     return;
                 }
                 const usuarioPorCnpj: Usuario | null = await this.usuarioDao.buscarUsuarioPorCnpj(cnpjEmpresa, transaction);
                 if(usuarioPorCnpj){
+                    await transaction.rollback();
                     res.status(409).json({mensagem: "CNPJ já cadastrado"});
                     return;
                 }
@@ -99,21 +104,25 @@ export default class UsuarioController {
     }
 
     public esqueciSenha = async (req: Request, res: Response) => {
+        const transaction = await sequelize.transaction();
         try{
             const { email } = req.body;
-            const usuario: Usuario | null = await this.usuarioDao.buscarUsuarioPorEmail(email);
+            const usuario: Usuario | null = await this.usuarioDao.buscarUsuarioPorEmail(email, transaction);
             if(!usuario) {
+                await transaction.rollback();
                 res.status(404).json({mensagem: "E-mail não encontrado"});
                 return;
             }
             const token = jwt.sign({email}, process.env.JWT_SECRET_RESET_PASSWORD!, {expiresIn: "15m"});
             usuario.tokenRedefinicaoSenha = token;
             usuario.tokenUtilizado = false;
-            await this.usuarioDao.atualizarUsuario(usuario);
+            await this.usuarioDao.atualizarUsuario(usuario, transaction);
             await enviarEmailRecuperacaoSenha(email, usuario.nomeUsu, token);
+            await transaction.commit();
             res.status(200).json({mensagem: "Email de recuperação enviado com sucesso!"});
         }
         catch(error){
+            await transaction.rollback();
             console.error('Erro ao enviar email');
             res.status(500).json({mensagem: "Erro ao enviar email"});
         }
