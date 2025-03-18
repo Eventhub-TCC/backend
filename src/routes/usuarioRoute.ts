@@ -14,5 +14,6 @@ route.put("/reset-password", validarTokenRedefinicaoSenha, usuarioController.red
 route.post("/validate-cpf", usuarioController.validarCpf);
 route.post("/validate-cnpj", usuarioController.validarCnpj);
 route.post("/validate-email", usuarioController.validarEmail);
+route.get('/get-user/:emailUsu', usuarioController.buscarUsuarioPorEmail);
 
 export default route;

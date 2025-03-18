@@ -209,4 +209,21 @@ export default class UsuarioController {
             res.status(500).json({mensagem: "Erro ao validar email"});
         }
     }
+
+    public buscarUsuarioPorEmail = async (req: Request, res: Response) => {
+        try{
+            const emailUsu = req.params.emailUsu;
+            const usuario: Usuario | null = await this.usuarioDao.buscarUsuarioPorEmail(emailUsu);
+            if(!usuario){
+                res.status(404).json({mensagem: "Usuário não encontrado"});
+                return;
+            }
+            res.status(200).json(usuario);
+            return;
+        }
+        catch(error){
+            console.error('Erro ao buscar usuario por email', error);
+            res.status(500).json({mensagem: "Erro ao buscar usuário por email"});
+        }
+    }
 }
