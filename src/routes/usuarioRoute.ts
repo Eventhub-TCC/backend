@@ -15,5 +15,7 @@ route.post("/validate-cpf", usuarioController.validarCpf);
 route.post("/validate-cnpj", usuarioController.validarCnpj);
 route.post("/validate-email", usuarioController.validarEmail);
 route.get('/get-user/:emailUsu', usuarioController.buscarUsuarioPorEmail);
+route.delete('/delete-user/:emailUsu', usuarioController.deletarUsuario);
+route.put('/update-user/:emailUsu', usuarioController.atualizarUsuario);
 
 export default route;

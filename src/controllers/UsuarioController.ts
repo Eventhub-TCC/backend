@@ -226,4 +226,73 @@ export default class UsuarioController {
             res.status(500).json({mensagem: "Erro ao buscar usuário por email"});
         }
     }
+
+    public deletarUsuario = async (req: Request, res: Response) => {
+        const transaction = await sequelize.transaction();
+        try{
+            const emailUsu = req.params.emailUsu;
+            const usuario: Usuario | null = await this.usuarioDao.buscarUsuarioPorEmail(emailUsu, transaction);
+            if(!usuario){
+                res.status(404).json({mensagem: "Usuário não encontrado"});
+                return;
+            }
+            await this.usuarioDao.deletarUsuario(usuario, transaction);
+            await transaction.commit();
+            res.status(200).json({mensagem: "Usuário deletado com sucesso"});
+        }
+        catch(error){
+            await transaction.rollback();
+            console.error('Erro ao deletar usuario', error);
+            res.status(500).json({mensagem: "Erro ao deletar usuário"});
+        }
+    }
+
+    public atualizarUsuario = async (req: Request, res: Response) => {
+        const transaction = await sequelize.transaction();
+        try{
+            let { nomeUsu, sobrenomeUsu, dtNasUsu, telUsu, cpfUsu, nomeEmpresa, telEmpresa, cnpjEmpresa, localizacaoEmpresa, senhaAtual, novaSenha, confirmarSenha  } = req.body;
+            const email = req.params.emailUsu;
+            const usuario: Usuario | null = await this.usuarioDao.buscarUsuarioPorEmail(email, transaction);
+            if(!usuario){
+                res.status(404).json({mensagem: "Usuário não encontrado"});
+                return;
+            }
+            for(let atributo in req.body){
+                if(req.body[atributo] === ''){
+                    req.body[atributo] = null;
+                }
+            }
+            if(senhaAtual){
+                const senhaValida = await compararSenha(senhaAtual, usuario.senhaUsu);
+                if(!senhaValida){
+                    res.status(401).json({mensagem: "Senha atual inválida"});
+                    return;
+                }
+                if(novaSenha){
+                    if(novaSenha !== confirmarSenha){
+                        res.status(400).json({mensagem: "As novas senhas não coincidem"});
+                        return;
+                    }
+                    usuario.senhaUsu = novaSenha;
+                }
+            }
+            usuario.nomeUsu = nomeUsu;
+            usuario.sobrenomeUsu = sobrenomeUsu;
+            usuario.dt_nasUsu = dtNasUsu;
+            usuario.telUsu = telUsu;
+            usuario.cpfUsu = cpfUsu;
+            usuario.nomeEmpresa = nomeEmpresa;
+            usuario.telEmpresa = telEmpresa;
+            usuario.cnpjEmpresa = cnpjEmpresa;
+            usuario.localizacaoEmpresa = localizacaoEmpresa;
+            await this.usuarioDao.atualizarUsuario(usuario, transaction);
+            await transaction.commit();
+            res.status(200).json({mensagem: "Usuário atualizado com sucesso"});
+        }
+        catch(error){
+            await transaction.rollback();
+            console.error('Erro ao atualizar usuario', error);
+            res.status(500).json({mensagem: "Erro ao atualizar usuário"});
+        }
+    }
 }
