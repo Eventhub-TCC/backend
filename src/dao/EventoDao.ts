@@ -1,5 +1,6 @@
 import { Transaction } from "sequelize";
 import Evento from "../models/Evento";
+import Usuario from "../models/Usuario";
 
 export default class EventoDao{
     public cadastrarEvento = async (localEvento:string,horaInicio:Date,horaFim:Date,nomeEvento:string,dataEvento:Date,idTipoEvento:number,idUsuario:string, transaction: Transaction | null = null)=>{
@@ -15,7 +16,17 @@ export default class EventoDao{
         return evento;
     }
 
-    public listarEventos = async (idUsuario: string):Promise<Evento[]> =>{
+    public listarEventos = async (emailUsu: string):Promise<Evento[]> =>{
+        const usuario: Usuario | null = await Usuario.findOne({
+            where: {
+                emailUsu
+            }
+        });
+        if (!usuario) {
+            throw new Error("Usuário não encontrado");
+        }
+        const idUsuario = usuario?.codigoUsu;
+
         const eventos: Evento[] = await Evento.findAll({
             where: {
                 idUsuario

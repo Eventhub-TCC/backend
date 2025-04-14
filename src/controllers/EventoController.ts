@@ -19,8 +19,8 @@ export default class EventoController {
 
     public listarEventos = async (req: Request, res: Response) =>{
         try{
-            const { idUsuario } = req.params;
-            const eventos = await this.eventoDao.listarEventos(idUsuario);
+            const { emailUsu } = req.params;
+            const eventos = await this.eventoDao.listarEventos( emailUsu );
             if (eventos.length === 0){
                 const mensagem = "Nenhum evento encontrado";
                 res.status(404).json({mensagem});
