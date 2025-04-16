@@ -19,6 +19,7 @@ export default class ConviteDao {
     const dataConvite = new Date();
 
     const novoConvite = await Convite.create({
+      idConvite: uuidConvite,
       idEvento,
       idConvidado: null,
       linkConvite: link,
@@ -43,6 +44,41 @@ export default class ConviteDao {
       console.error("Erro ao deletar convite:", error);
       throw error;
     }
+  };
+
+  public async confirmarConvite (
+    idConvite: string,
+    nome: string,
+    email: string,
+    rg: string,
+    dataNascimento: Date
+  ): Promise<Convidado> {
+    const convite = await Convite.findByPk(idConvite);
+    console.log('idConvite',idConvite)
+  
+    if (!convite) {
+      throw new Error("Convite não encontrado.");
+    }
+  
+    if (convite.status === "Utilizado") {
+      throw new Error("Convite já foi utilizado.");
+    }
+  
+    const novoConvidado = await Convidado.create({
+      nome,
+      email,
+      rg,
+      dataNascimento,
+      status: "Pendente",
+      idConvite,
+    });
+  
+    // Atualiza o status do convite
+    await convite.update({
+        idConvidado: novoConvidado.idConvidado, 
+        status: "Utilizado", 
+  });
+    return novoConvidado;
   };
 }
 

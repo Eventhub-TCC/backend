@@ -17,6 +17,8 @@ route.delete('/deletar-convite/:idConvite', async (req, res) => {
     await conviteController.deletarConvite(req, res);
 });
 
+route.post("/confirmar-convite/:idConvite", conviteController.confirmarConvite);
+
 
 
 
