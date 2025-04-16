@@ -15,4 +15,19 @@ export default class ConvidadoDao {
     console.log("convidados", convidados);
     return convidados;
   };
+
+  public atualizarStatusConvidadoDAO = async (idConvidado: string, status: string) => {
+    try {
+      const convidado = await Convidado.findByPk(idConvidado);
+      if (!convidado) {
+        throw new Error('Convidado não encontrado');
+      }
+      convidado.status = status;
+      await convidado.save();
+      return convidado;
+    } catch (error) {
+      console.error('Erro ao atualizar status do convidado:', error);
+      throw error;
+    }
+  }
 }

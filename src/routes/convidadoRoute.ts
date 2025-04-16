@@ -8,6 +8,7 @@ const convidadoController = new ConvidadoController();
 route.get('/obter-convidados/:idEvento', async (req, res) => {
     await convidadoController.obterConvidados(req, res);
   });
+route.put('/atualizar-status-convidado/:idConvidado', convidadoController.atualizarStatusConvidadoController);
 
 
 export default route;
