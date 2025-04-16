@@ -45,7 +45,7 @@ const inicializarComDados = async () => {
 
 const sincronizarBanco = async () => {
     try {
-        await sequelize.sync();
+        await sequelize.sync({ alter: true });
         await inicializarComDados();
         console.log('Modelos sincronizados com o banco de dados.');
     } catch (error) {

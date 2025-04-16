@@ -59,7 +59,6 @@ Evento.init(
         idUsuario:{
             type:DataTypes.UUID,
             allowNull:false,
-            primaryKey:true,
             references:{
                 model:Usuario,
                 key:'codigo_usu'
