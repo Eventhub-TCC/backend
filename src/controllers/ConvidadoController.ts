@@ -21,4 +21,17 @@ export default class ConvidadoController {
       res.status(500).json({ mensagem: 'Erro interno ao obter convidados.' });
     }
   };
+
+  public atualizarStatusConvidadoController = async (req: Request, res: Response) => {
+    const { idConvidado } = req.params;
+    const { status } = req.body; 
+  
+    try {
+      await this.convidadoDao.atualizarStatusConvidadoDAO(idConvidado, status);
+      res.status(200).json({ message: 'Status atualizado com sucesso' });
+    } catch (error) {
+      console.error('Erro no controller ao atualizar status:', error);
+      res.status(500).json({ error: 'Erro ao atualizar status' });
+    }
+  };
 }
