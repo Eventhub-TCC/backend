@@ -6,6 +6,7 @@ import usuarioRoute from './routes/usuarioRoute';
 import eventoRoute from './routes/eventoRoute';
 import convidadoRoute from './routes/convidadoRoute';
 import tipoEventoRoute from './routes/tipoEventoRoutes';
+import conviteRoute from './routes/ConviteRoute';
 
 const app = express();
 
@@ -21,6 +22,7 @@ app.use('/users', usuarioRoute);
 app.use('/users', eventoRoute);
 app.use('/users', convidadoRoute);
 app.use('/users',tipoEventoRoute);
+app.use('/users', conviteRoute);
 
 
 sincronizarBanco();
