@@ -58,10 +58,10 @@ export default class EventoDao{
     }
 
 
-    public deletarEvento = async (idUsuario:string) => {
+    public deletarEvento = async (idEvento:string) => {
         await Evento.destroy({
             where: {
-                idUsuario 
+                idEvento 
             }
         })
     }
