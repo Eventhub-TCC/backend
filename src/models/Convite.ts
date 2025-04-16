@@ -32,7 +32,7 @@ Convite.init({
         type: DataTypes.UUID,
         allowNull: false,
         references: {
-            model: 'Convidado',
+            model: 'CONVIDADO',
             key: 'id_convidado'
         },
     },
