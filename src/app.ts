@@ -4,6 +4,8 @@ import { sincronizarBanco } from './config/database';
 import cors from 'cors';
 import usuarioRoute from './routes/usuarioRoute';
 import eventoRoute from './routes/eventoRoute';
+import convidadoRoute from './routes/convidadoRoute';
+import tipoEventoRoute from './routes/tipoEventoRoutes';
 
 const app = express();
 
@@ -14,8 +16,12 @@ const {
 
 app.use(cors({origin:URL_FRONTEND}));
 app.use(express.json());
+app.use('/files', express.static('uploads'));
 app.use('/users', usuarioRoute);
 app.use('/users', eventoRoute);
+app.use('/users', convidadoRoute);
+app.use('/users',tipoEventoRoute);
+
 
 sincronizarBanco();
 

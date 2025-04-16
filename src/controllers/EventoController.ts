@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import EventoDao from "../dao/EventoDao";
+import fs from "fs";
 
 export default class EventoController {
 
@@ -7,13 +8,24 @@ export default class EventoController {
 
     public cadastrarEvento = async (req: Request, res: Response) =>{
         try{
-            const { localEvento, horaInicio, horaFim, nomeEvento, dataEvento, idTipoEvento, idUsuario } = req.body;
-            await this.eventoDao.cadastrarEvento(localEvento, horaInicio, horaFim, nomeEvento, dataEvento, idTipoEvento, idUsuario)
+            const { descricaoEvento,  cepLocal, enderecoLocal, numeroLocal, complementoLocal, bairroLocal, cidadeLocal, ufLocal, horaInicio, horaFim, nomeEvento, dataEvento, idTipoEvento } = req.body;
+            const  idUsuario = req.params.idUsuario;
+            const imagemEvento = req.file?.filename || null;
+            await this.eventoDao.cadastrarEvento(descricaoEvento, imagemEvento, cepLocal, enderecoLocal, numeroLocal, complementoLocal, bairroLocal, cidadeLocal, ufLocal, horaInicio, horaFim, nomeEvento, dataEvento, idTipoEvento, idUsuario)
             res.status(201).json({ message: 'Evento cadastrado com sucesso!'});
         }
         catch(error){
             console.error('Erro ao cadastrar evento', error);
-            res.status(500).json({mensagem: "Erro ao cadastrar evento"});
+            if(req.file){
+            fs.unlink('uploads/' + req.file.filename,(err)=>{
+                if(err){
+                    console.error('Erro ao deletar imagem', err)
+                    return
+                }
+                console.log('Imagem deletada com sucesso')
+            })
+        }
+        res.status(500).json({mensagem: "Erro ao cadastrar evento"});
         }
     }
 
