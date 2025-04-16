@@ -1,6 +1,7 @@
 import Convite from '../models/Convite';
 import Convidado from '../models/Convidado';
 import { v4 as uuidv4 } from 'uuid';
+import Evento from '../models/Evento';
 
 export default class ConviteDao {
   public listarConvite = async (idEvento: string) => {
@@ -79,6 +80,31 @@ export default class ConviteDao {
         status: "Utilizado", 
   });
     return novoConvidado;
+  };
+
+  public async buscarEventoPorConvite(idConvite: string): Promise<Evento> {
+    const convite = await Convite.findByPk(idConvite);
+    if (!convite) {
+      throw new Error('Convite não encontrado');
+    }
+  
+    const idEvento = convite.idEvento;
+  
+
+    const evento = await Evento.findOne({
+      where: { idEvento },
+      attributes: [
+        'idEvento', 'nomeEvento', 'dataEvento', 'horaInicio', 'horaFim',   
+        'cepLocal', 'enderecoLocal', 'numeroLocal', 'complementoLocal',
+        'bairroLocal', 'cidadeLocal', 'ufLocal'
+      ]
+    });
+  
+    if (!evento) {
+      throw new Error('Evento não encontrado');
+    }
+  
+    return evento;
   };
 }
 

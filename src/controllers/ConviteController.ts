@@ -74,4 +74,13 @@ export default class ConvidadoController {
     }
   };
   
+  public buscarEventoPorConvite = async (req: Request, res: Response) => {
+    try {
+      const { idConvite } = req.params;
+      const evento = await this.conviteDao.buscarEventoPorConvite(idConvite);
+      res.json(evento);
+    } catch (err: any) {
+      res.status(404).json({ erro: err.message });
+    }
+  };
 }
