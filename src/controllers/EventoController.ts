@@ -69,6 +69,7 @@ export default class EventoController {
 
         const {
             nomeEvento,
+            descricaoEvento,
             tipoEvento,
             dataEvento,
             horaInicio,
@@ -85,6 +86,7 @@ export default class EventoController {
         try {
           const eventoAtualizado = await this.eventoDao.editarEvento(Number(idEvento), {
             nomeEvento,
+            descricaoEvento,
             tipoEvento,
             dataEvento,
             horaInicio,

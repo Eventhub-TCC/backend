@@ -51,6 +51,7 @@ export default class EventoDao{
     public editarEvento = async (  id: number,
         dadosAtualizados: {
             nomeEvento: string,
+            descricaoEvento: string,
             tipoEvento : string,
             dataEvento: string,
             horaInicio: string,
@@ -73,6 +74,7 @@ export default class EventoDao{
       
         await evento.update({
           nomeEvento: dadosAtualizados.nomeEvento,
+          descricaoEvento: dadosAtualizados.descricaoEvento,
           tipoEvento: dadosAtualizados.tipoEvento,
           dataEvento: dadosAtualizados.dataEvento,
           horaInicio: dadosAtualizados.horaInicio,
