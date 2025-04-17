@@ -95,7 +95,7 @@ Evento.init(
                 model:Usuario,
                 key:'codigo_usu'
             }
-        }
+        },
     },{
         sequelize,
         modelName:'Evento',
@@ -105,8 +105,8 @@ Evento.init(
     }
 );
 
-Usuario.hasMany(Evento,{foreignKey:'idUsuario'});
-TipoEvento.hasMany(Evento,{foreignKey:'idTipoEvento'});
+Usuario.hasMany(Evento,{foreignKey:'idUsuario',   onDelete: 'CASCADE'});
+TipoEvento.hasMany(Evento,{foreignKey:'idTipoEvento',   onDelete: 'CASCADE'});
 
 
 export default Evento;
