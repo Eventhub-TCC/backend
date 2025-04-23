@@ -48,30 +48,56 @@ export default class EventoDao{
         return evento;
     }
 
-    public editarEvento = async (idEvento: string, localEvento: string, horaInicio: Date, horaFim: Date, nomeEvento: string, dataEvento: Date, idTipoEvento: number, idUsuario: string, transaction: Transaction | null = null): Promise<[number, Evento[]]> => {
-        const resultado = await Evento.update({
-            localEvento, 
-            horaInicio, 
-            horaFim, 
-            nomeEvento, 
-            dataEvento, 
-            idTipoEvento, 
-            idUsuario
-        }, {
-            where: { idEvento }, 
-            transaction,
-            returning: true 
-        }); 
-        return resultado; 
+    public editarEvento = async (  id: number,
+        dadosAtualizados: {
+            nomeEvento: string,
+            descricaoEvento: string,
+            tipoEvento : string,
+            dataEvento: string,
+            horaInicio: string,
+            horaFim: string,
+            cepLocal: string,
+            enderecoLocal: string,
+            numeroLocal: string,
+            complementoLocal: string,
+            bairroLocal: string,
+            cidadeLocal: string,
+            ufLocal: string,
+        }
+      ) => {
+        const evento = await Evento.findByPk(id);
+        
+      
+        if (!evento) {
+          return null;
+        }
+      
+        await evento.update({
+          nomeEvento: dadosAtualizados.nomeEvento,
+          descricaoEvento: dadosAtualizados.descricaoEvento,
+          tipoEvento: dadosAtualizados.tipoEvento,
+          dataEvento: dadosAtualizados.dataEvento,
+          horaInicio: dadosAtualizados.horaInicio,
+          horaFim: dadosAtualizados.horaFim,
+          cepLocal: dadosAtualizados.cepLocal,
+          enderecoLocal: dadosAtualizados.enderecoLocal,
+          numeroLocal: dadosAtualizados.numeroLocal,
+          complementoLocal: dadosAtualizados.complementoLocal,
+          bairroLocal: dadosAtualizados.bairroLocal,
+          cidadeLocal: dadosAtualizados.cidadeLocal,
+          ufLocal: dadosAtualizados.ufLocal,
+        });
+      
+        return evento;
     }
 
 
-    public deletarEvento = async (idEvento:string) => {
+    public deletarEvento = async (idEvento: string) => {
         await Evento.destroy({
             where: {
-                idEvento 
+                idEvento
             }
-        })
+        });
     }
 }
 

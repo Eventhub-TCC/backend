@@ -53,5 +53,34 @@ export default class ConvidadoController {
       return res.status(500).json({ message: "Erro interno do servidor" });
     }
   };
+
+  public confirmarConvite = async (req: Request, res: Response) => {
+    try {
+      const { idConvite } = req.params;
+      const { nome, email, rg, dataNascimento } = req.body;
   
+      const convidado = await this.conviteDao.confirmarConvite(
+        idConvite,
+        nome,
+        email,
+        rg,
+        new Date(dataNascimento)
+      );
+  
+      res.status(201).json(convidado);
+    } catch (error) {
+      console.error("Erro ao confirmar convite:", error);
+      res.status(400).json({ error: (error as Error).message });
+    }
+  };
+  
+  public buscarEventoPorConvite = async (req: Request, res: Response) => {
+    try {
+      const { idConvite } = req.params;
+      const evento = await this.conviteDao.buscarEventoPorConvite(idConvite);
+      res.json(evento);
+    } catch (err: any) {
+      res.status(404).json({ erro: err.message });
+    }
+  };
 }

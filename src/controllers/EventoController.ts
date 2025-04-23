@@ -64,22 +64,55 @@ export default class EventoController {
     }
 
     public editarEvento = async (req: Request, res: Response) =>{
-        try{
-            const { idEvento } = req.params;
-            const { localEvento, horaInicio, horaFim, nomeEvento, dataEvento, idTipoEvento, idUsuario } = req.body; 
-            const resultado = await this.eventoDao.editarEvento(idEvento, localEvento, horaInicio, horaFim, nomeEvento, dataEvento, idTipoEvento, idUsuario);
-            if (resultado[0] === 0){
-                const mensagem = "Evento não encontrado";
-                res.status(404).json({mensagem});
-                return;
-            }
-            res.status(200).json({mensagem: "Evento editado com sucesso"});
+        const { idEvento } = req.params;
+    
+
+        const {
+            nomeEvento,
+            descricaoEvento,
+            tipoEvento,
+            dataEvento,
+            horaInicio,
+            horaFim,
+            cepLocal,
+            enderecoLocal,
+            numeroLocal,
+            complementoLocal,
+            bairroLocal,
+            cidadeLocal,
+            ufLocal,
+        } = req.body;
+      
+        try {
+          const eventoAtualizado = await this.eventoDao.editarEvento(Number(idEvento), {
+            nomeEvento,
+            descricaoEvento,
+            tipoEvento,
+            dataEvento,
+            horaInicio,
+            horaFim,
+            cepLocal,
+            enderecoLocal,
+            numeroLocal,
+            complementoLocal,
+            bairroLocal,
+            cidadeLocal,
+            ufLocal,
+          });
+      
+          if (!eventoAtualizado) {
+            return res.status(404).json({ message: 'Evento não encontrado' });
+          }
+      
+          return res.status(200).json({
+            message: 'Evento atualizado com sucesso',
+            evento: eventoAtualizado,
+          });
+        } catch (error) {
+          console.error('Erro ao editar evento:', error);
+          return res.status(500).json({ message: 'Erro interno ao editar evento' });
         }
-        catch(error){
-            console.error('Erro ao editar evento', error);
-            res.status(500).json({mensagem: "Erro ao editar evento"});
-        }
-    }
+      };
     
 
     public deletarEvento = async (req: Request, res: Response) => {

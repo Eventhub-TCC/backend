@@ -56,8 +56,8 @@ Convite.init({
     underscored: true
 });
 
-Convite.belongsTo(Evento, { foreignKey: 'idEvento' });
-Evento.hasMany(Convite, { foreignKey: 'idEvento' });
+Convite.belongsTo(Evento, { foreignKey: 'idEvento',   onDelete: 'CASCADE' });
+Evento.hasMany(Convite, { foreignKey: 'idEvento',   onDelete: 'CASCADE' });
 
 
 
