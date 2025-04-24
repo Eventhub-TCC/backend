@@ -1,6 +1,7 @@
 import express from 'express';
 import UsuarioController from '../controllers/UsuarioController';
 import validarTokenRedefinicaoSenha from '../middlewares/validarToken';
+import upload from '../config/multer';
 
 const route = express.Router();
 
@@ -17,5 +18,7 @@ route.post("/validate-email", usuarioController.validarEmail);
 route.get('/get-user/:emailUsu', usuarioController.buscarUsuarioPorEmail);
 route.delete('/delete-user/:emailUsu', usuarioController.deletarUsuario);
 route.put('/update-user/:emailUsu', usuarioController.atualizarUsuario);
+route.put('/update-image/:emailUsu', upload.single('file'), usuarioController.alterarFotoUsuario);
 
 export default route;
+

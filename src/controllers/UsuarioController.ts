@@ -304,4 +304,25 @@ export default class UsuarioController {
             res.status(500).json({mensagem: "Erro ao atualizar usuário"});
         }
     }
+    public alterarFotoUsuario = async (req: Request, res: Response) => {
+        const transaction = await sequelize.transaction();
+        try{
+            const emailUsu = req.params.emailUsu;
+            const usuario: Usuario | null = await this.usuarioDao.buscarUsuarioPorEmail(emailUsu, transaction);
+            if(!usuario){
+                res.status(404).json({mensagem: "Usuário não encontrado"});
+                return;
+            }
+            usuario.fotoUsu = req.file?.filename || null;
+            await this.usuarioDao.atualizarUsuario(usuario, transaction);
+            console.log('Usuário após salvar:', usuario);
+            await transaction.commit();
+            res.status(200).json({mensagem: "Foto do usuário atualizada com sucesso"});
+        }
+        catch(error){
+            await transaction.rollback();
+            console.error('Erro ao atualizar foto do usuario', error);
+            res.status(500).json({mensagem: "Erro ao atualizar foto do usuário"});
+        }
+    }
 }
