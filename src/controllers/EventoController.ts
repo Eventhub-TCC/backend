@@ -80,8 +80,10 @@ export default class EventoController {
             complementoLocal,
             bairroLocal,
             cidadeLocal,
-            ufLocal,
+            ufLocal
         } = req.body;
+
+        const imagemEvento = req.file?.filename || null;
       
         try {
           const eventoAtualizado = await this.eventoDao.editarEvento(Number(idEvento), {
@@ -98,7 +100,9 @@ export default class EventoController {
             bairroLocal,
             cidadeLocal,
             ufLocal,
+            imagemEvento
           });
+
       
           if (!eventoAtualizado) {
             return res.status(404).json({ message: 'Evento não encontrado' });
