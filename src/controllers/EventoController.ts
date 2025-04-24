@@ -122,7 +122,6 @@ export default class EventoController {
     public deletarEvento = async (req: Request, res: Response) => {
         try{
             const { idEvento } = req.params; 
-        
             await this.eventoDao.deletarEvento(idEvento)
             res.status(200).json({mensagem: "Evento deletado com sucesso"});
         }
