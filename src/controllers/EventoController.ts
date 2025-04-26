@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import EventoDao from "../dao/EventoDao";
 import fs from "fs";
+import { AuthenticatedRequest } from "../types/AuthenticatedRequest";
 
 export default class EventoController {
 
@@ -29,9 +30,9 @@ export default class EventoController {
         }
     }
 
-    public listarEventos = async (req: Request, res: Response) =>{
+    public listarEventos = async (req: AuthenticatedRequest, res: Response) =>{
         try{
-            const emailUsu = req.body.emailToken;
+            const emailUsu = req.user!.email;
             const eventos = await this.eventoDao.listarEventos( emailUsu );
             if (eventos.length === 0){
                 const mensagem = "Nenhum evento encontrado";
@@ -80,8 +81,10 @@ export default class EventoController {
             complementoLocal,
             bairroLocal,
             cidadeLocal,
-            ufLocal,
+            ufLocal
         } = req.body;
+
+        const imagemEvento = req.file?.filename || null;
       
         try {
           const eventoAtualizado = await this.eventoDao.editarEvento(Number(idEvento), {
@@ -98,7 +101,9 @@ export default class EventoController {
             bairroLocal,
             cidadeLocal,
             ufLocal,
+            imagemEvento
           });
+
       
           if (!eventoAtualizado) {
             return res.status(404).json({ message: 'Evento não encontrado' });
@@ -118,7 +123,6 @@ export default class EventoController {
     public deletarEvento = async (req: Request, res: Response) => {
         try{
             const { idEvento } = req.params; 
-        
             await this.eventoDao.deletarEvento(idEvento)
             res.status(200).json({mensagem: "Evento deletado com sucesso"});
         }

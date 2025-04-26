@@ -7,6 +7,7 @@ import UsuarioTipoDao from "../dao/UsuarioTipoDao";
 import { compararSenha } from "../utils/criptografiaSenha";
 import enviarEmailRecuperacaoSenha from "../utils/enviaEmail";
 import { cnpj, cpf } from "cpf-cnpj-validator";
+import { AuthenticatedRequest } from "../types/AuthenticatedRequest";
 
 export default class UsuarioController {
     private usuarioDao = new UsuarioDao();
@@ -223,9 +224,9 @@ export default class UsuarioController {
         }
     }
 
-    public buscarUsuarioPorEmail = async (req: Request, res: Response) => {
+    public buscarUsuarioPorEmail = async (req: AuthenticatedRequest, res: Response) => {
         try{
-            const emailUsu = req.body.emailToken;
+            const emailUsu = req.user!.email;
             const usuario: Usuario | null = await this.usuarioDao.buscarUsuarioPorEmail(emailUsu);
             if(!usuario){
                 res.status(404).json({mensagem: "Usuário não encontrado"});
@@ -240,10 +241,10 @@ export default class UsuarioController {
         }
     }
 
-    public deletarUsuario = async (req: Request, res: Response) => {
+    public deletarUsuario = async (req: AuthenticatedRequest, res: Response) => {
         const transaction = await sequelize.transaction();
         try{
-            const emailUsu = req.body.emailToken;
+            const emailUsu = req.user!.email;
             const usuario: Usuario | null = await this.usuarioDao.buscarUsuarioPorEmail(emailUsu, transaction);
             if(!usuario){
                 res.status(404).json({mensagem: "Usuário não encontrado"});
@@ -260,11 +261,11 @@ export default class UsuarioController {
         }
     }
 
-    public atualizarUsuario = async (req: Request, res: Response) => {
+    public atualizarUsuario = async (req: AuthenticatedRequest, res: Response) => {
         const transaction = await sequelize.transaction();
         try{
             let { nomeUsu, sobrenomeUsu, dtNasUsu, telUsu, cpfUsu, nomeEmpresa, telEmpresa, cnpjEmpresa, localizacaoEmpresa, senhaAtual, novaSenha, confirmarSenha  } = req.body;
-            const email = req.body.emailToken;
+            const email = req.user!.email;
             const usuario: Usuario | null = await this.usuarioDao.buscarUsuarioPorEmail(email, transaction);
             if(!usuario){
                 res.status(404).json({mensagem: "Usuário não encontrado"});
@@ -306,6 +307,28 @@ export default class UsuarioController {
             await transaction.rollback();
             console.error('Erro ao atualizar usuario', error);
             res.status(500).json({mensagem: "Erro ao atualizar usuário"});
+        }
+    }
+    public alterarFotoUsuario = async (req: AuthenticatedRequest, res: Response) => {
+        const transaction = await sequelize.transaction();
+        try{
+            const emailUsu = req.user!.email;
+            console.log(emailUsu)
+            const usuario: Usuario | null = await this.usuarioDao.buscarUsuarioPorEmail(emailUsu, transaction);
+            if(!usuario){
+                res.status(404).json({mensagem: "Usuário não encontrado"});
+                return;
+            }
+            usuario.fotoUsu = req.file?.filename || null;
+            await this.usuarioDao.atualizarUsuario(usuario, transaction);
+            console.log('Usuário após salvar:', usuario);
+            await transaction.commit();
+            res.status(200).json({mensagem: "Foto do usuário atualizada com sucesso"});
+        }
+        catch(error){
+            await transaction.rollback();
+            console.error('Erro ao atualizar foto do usuario', error);
+            res.status(500).json({mensagem: "Erro ao atualizar foto do usuário"});
         }
     }
 }

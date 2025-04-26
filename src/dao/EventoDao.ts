@@ -63,6 +63,7 @@ export default class EventoDao{
             bairroLocal: string,
             cidadeLocal: string,
             ufLocal: string,
+            imagemEvento: string | null
         }
       ) => {
         const evento = await Evento.findByPk(id);
@@ -86,6 +87,7 @@ export default class EventoDao{
           bairroLocal: dadosAtualizados.bairroLocal,
           cidadeLocal: dadosAtualizados.cidadeLocal,
           ufLocal: dadosAtualizados.ufLocal,
+          imagemEvento: dadosAtualizados.imagemEvento
         });
       
         return evento;

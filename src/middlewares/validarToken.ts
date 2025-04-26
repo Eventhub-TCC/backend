@@ -1,7 +1,8 @@
 import { NextFunction, Request, Response } from 'express';
 import jwt from 'jsonwebtoken';
+import { AuthenticatedRequest } from '../types/AuthenticatedRequest';
 
-const validarTokenAutenticacao = async (req: Request, res: Response, next: NextFunction) => {
+const validarTokenAutenticacao = async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
     const { authorization } = req.headers;
     if(!authorization){
         res.status(401).json({mensagem: "Token não informado"});
@@ -14,7 +15,9 @@ const validarTokenAutenticacao = async (req: Request, res: Response, next: NextF
                 res.status(401).json({mensagem: "Token inválido ou expirado"});
                 return;
             }
-            req.body.emailToken = decoded.email;
+            req.user = {
+                email: decoded.email
+            }
             next();
         });
     }

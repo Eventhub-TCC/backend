@@ -10,7 +10,7 @@ const eventoController = new EventoController();
 route.post('/:idUsuario/events', validarTokenAutenticacao, upload.single("file"), eventoController.cadastrarEvento);
 route.get('/events', validarTokenAutenticacao, eventoController.listarEventos);
 route.get('/:idUsuario/events/:idEvento', validarTokenAutenticacao, eventoController.buscarEventoporId);
-route.put('/events/:idEvento', validarTokenAutenticacao, async (req, res) => {
+route.put('/events/:idEvento', validarTokenAutenticacao, upload.single("file"), async (req, res) => {
     await eventoController.editarEvento(req, res);
 });
 route.delete('/:idUsuario/events/:idEvento', validarTokenAutenticacao, eventoController.deletarEvento);
