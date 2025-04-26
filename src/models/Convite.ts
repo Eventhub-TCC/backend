@@ -23,7 +23,7 @@ Convite.init({
         type: INTEGER,
         allowNull: false,
         references: {
-          model: 'Evento',
+          model: Evento,
           key: 'id_evento'
         },
         field: 'id_evento', 

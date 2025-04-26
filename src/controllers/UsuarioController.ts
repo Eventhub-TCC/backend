@@ -163,6 +163,10 @@ export default class UsuarioController {
         }
     }
 
+    public autenticarUsuario = async (req: Request, res: Response) => {
+        res.status(200).json({mensagem: "Usuário autenticado com sucesso!"});
+    }
+
     public validarCpf = async (req: Request, res: Response) => {
         try{
             const { cpfUsu } = req.body;
@@ -221,7 +225,7 @@ export default class UsuarioController {
 
     public buscarUsuarioPorEmail = async (req: Request, res: Response) => {
         try{
-            const emailUsu = req.params.emailUsu;
+            const emailUsu = req.body.emailToken;
             const usuario: Usuario | null = await this.usuarioDao.buscarUsuarioPorEmail(emailUsu);
             if(!usuario){
                 res.status(404).json({mensagem: "Usuário não encontrado"});
@@ -239,7 +243,7 @@ export default class UsuarioController {
     public deletarUsuario = async (req: Request, res: Response) => {
         const transaction = await sequelize.transaction();
         try{
-            const emailUsu = req.params.emailUsu;
+            const emailUsu = req.body.emailToken;
             const usuario: Usuario | null = await this.usuarioDao.buscarUsuarioPorEmail(emailUsu, transaction);
             if(!usuario){
                 res.status(404).json({mensagem: "Usuário não encontrado"});
@@ -260,7 +264,7 @@ export default class UsuarioController {
         const transaction = await sequelize.transaction();
         try{
             let { nomeUsu, sobrenomeUsu, dtNasUsu, telUsu, cpfUsu, nomeEmpresa, telEmpresa, cnpjEmpresa, localizacaoEmpresa, senhaAtual, novaSenha, confirmarSenha  } = req.body;
-            const email = req.params.emailUsu;
+            const email = req.body.emailToken;
             const usuario: Usuario | null = await this.usuarioDao.buscarUsuarioPorEmail(email, transaction);
             if(!usuario){
                 res.status(404).json({mensagem: "Usuário não encontrado"});

@@ -31,7 +31,7 @@ export default class EventoController {
 
     public listarEventos = async (req: Request, res: Response) =>{
         try{
-            const { emailUsu } = req.params;
+            const emailUsu = req.body.emailToken;
             const eventos = await this.eventoDao.listarEventos( emailUsu );
             if (eventos.length === 0){
                 const mensagem = "Nenhum evento encontrado";
