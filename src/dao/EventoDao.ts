@@ -52,7 +52,7 @@ export default class EventoDao{
         dadosAtualizados: {
             nomeEvento: string,
             descricaoEvento: string,
-            tipoEvento : string,
+            idTipoEvento : string,
             dataEvento: string,
             horaInicio: string,
             horaFim: string,
@@ -76,7 +76,7 @@ export default class EventoDao{
         await evento.update({
           nomeEvento: dadosAtualizados.nomeEvento,
           descricaoEvento: dadosAtualizados.descricaoEvento,
-          tipoEvento: dadosAtualizados.tipoEvento,
+          idTipoEvento: dadosAtualizados.idTipoEvento,
           dataEvento: dadosAtualizados.dataEvento,
           horaInicio: dadosAtualizados.horaInicio,
           horaFim: dadosAtualizados.horaFim,
@@ -87,7 +87,7 @@ export default class EventoDao{
           bairroLocal: dadosAtualizados.bairroLocal,
           cidadeLocal: dadosAtualizados.cidadeLocal,
           ufLocal: dadosAtualizados.ufLocal,
-          imagemEvento: dadosAtualizados.imagemEvento
+          ...(dadosAtualizados.imagemEvento && { imagemEvento: dadosAtualizados.imagemEvento })
         });
       
         return evento;
