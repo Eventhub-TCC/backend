@@ -8,6 +8,7 @@ import { compararSenha } from "../utils/criptografiaSenha";
 import enviarEmailRecuperacaoSenha from "../utils/enviaEmail";
 import { cnpj, cpf } from "cpf-cnpj-validator";
 import { AuthenticatedRequest } from "../types/AuthenticatedRequest";
+import { deletarImagemServidor } from "../utils/deletarImagemServidor";
 
 export default class UsuarioController {
     private usuarioDao = new UsuarioDao();
@@ -318,6 +319,9 @@ export default class UsuarioController {
             if(!usuario){
                 res.status(404).json({mensagem: "Usuário não encontrado"});
                 return;
+            }
+            if(usuario.fotoUsu){
+                deletarImagemServidor(usuario.fotoUsu)
             }
             usuario.fotoUsu = req.file?.filename || null;
             await this.usuarioDao.atualizarUsuario(usuario, transaction);

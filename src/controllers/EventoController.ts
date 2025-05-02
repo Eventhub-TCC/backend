@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import EventoDao from "../dao/EventoDao";
 import fs from "fs";
 import { AuthenticatedRequest } from "../types/AuthenticatedRequest";
+import { deletarImagemServidor } from "../utils/deletarImagemServidor";
 
 export default class EventoController {
 
@@ -66,7 +67,7 @@ export default class EventoController {
 
     public editarEvento = async (req: Request, res: Response) =>{
         const { idEvento } = req.params;
-    
+
 
         const {
             nomeEvento,
@@ -123,6 +124,16 @@ export default class EventoController {
     public deletarEvento = async (req: Request, res: Response) => {
         try{
             const { idEvento } = req.params; 
+            const evento = await this.eventoDao.buscarEventoporId(idEvento)
+            if (!evento){
+                const mensagem = "Evento não encontrado";
+                res.status(404).json({mensagem});
+                return;
+            }
+            else{
+                if(evento.dataValues.imagemEvento)
+                deletarImagemServidor(evento.dataValues.imagemEvento)
+            }
             await this.eventoDao.deletarEvento(idEvento)
             res.status(200).json({mensagem: "Evento deletado com sucesso"});
         }
