@@ -3,10 +3,12 @@ import EventoDao from "../dao/EventoDao";
 import fs from "fs";
 import { AuthenticatedRequest } from "../types/AuthenticatedRequest";
 import { deletarImagemServidor } from "../utils/deletarImagemServidor";
+import TipoEventoDao from "../dao/TipoEventoDao";
 
 export default class EventoController {
 
     private eventoDao = new EventoDao();
+    private tipoEventoDao = new TipoEventoDao();
 
     public cadastrarEvento = async (req: Request, res: Response) =>{
         try{
@@ -57,7 +59,8 @@ export default class EventoController {
                 res.status(404).json({mensagem});
                 return;
             }
-            res.status(200).json(evento);
+            const tipoEvento = await this.tipoEventoDao.buscarTipoEventoPorId(evento.dataValues.idTipoEvento);
+            res.status(200).json({...evento.dataValues, tipoEvento: tipoEvento?.dataValues});
         }
         catch(error){
             console.error('Erro ao buscar evento', error);
