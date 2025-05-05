@@ -85,10 +85,14 @@ export default class EventoController {
             complementoLocal,
             bairroLocal,
             cidadeLocal,
-            ufLocal
+            ufLocal,
+            imagemEditada,
         } = req.body;
 
-        const imagemEvento = req.file?.filename || null;
+        let imagemEvento = req.file?.filename || null
+
+
+        
       
         try {
           const eventoAtualizado = await this.eventoDao.editarEvento(Number(idEvento), {
@@ -105,7 +109,8 @@ export default class EventoController {
             bairroLocal,
             cidadeLocal,
             ufLocal,
-            imagemEvento
+            imagemEvento,
+            imagemEditada: imagemEditada === 'true' ? true : false,
           });
 
       

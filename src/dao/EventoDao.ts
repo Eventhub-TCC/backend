@@ -63,7 +63,8 @@ export default class EventoDao{
             bairroLocal: string,
             cidadeLocal: string,
             ufLocal: string,
-            imagemEvento: string | null
+            imagemEvento: string | null,
+            imagemEditada: boolean
         }
       ) => {
         const evento = await Evento.findByPk(id);
@@ -72,6 +73,8 @@ export default class EventoDao{
         if (!evento) {
           return null;
         }
+
+        const { imagemEditada } = dadosAtualizados;
       
         await evento.update({
           nomeEvento: dadosAtualizados.nomeEvento,
@@ -87,7 +90,7 @@ export default class EventoDao{
           bairroLocal: dadosAtualizados.bairroLocal,
           cidadeLocal: dadosAtualizados.cidadeLocal,
           ufLocal: dadosAtualizados.ufLocal,
-          ...(dadosAtualizados.imagemEvento && { imagemEvento: dadosAtualizados.imagemEvento })
+          ...(imagemEditada && { imagemEvento: dadosAtualizados.imagemEvento })
         });
       
         return evento;
