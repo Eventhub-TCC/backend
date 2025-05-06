@@ -16,7 +16,9 @@ const validarTokenAutenticacao = async (req: AuthenticatedRequest, res: Response
                 return;
             }
             req.user = {
-                email: decoded.email
+                id: decoded.id,
+                email: decoded.email,
+                tipo: decoded.tipo
             }
             next();
         });

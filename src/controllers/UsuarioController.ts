@@ -9,6 +9,7 @@ import enviarEmailRecuperacaoSenha from "../utils/enviaEmail";
 import { cnpj, cpf } from "cpf-cnpj-validator";
 import { AuthenticatedRequest } from "../types/AuthenticatedRequest";
 import { deletarImagemServidor } from "../utils/deletarImagemServidor";
+import UsuarioTipo from "../models/UsuarioTipo";
 
 export default class UsuarioController {
     private usuarioDao = new UsuarioDao();
@@ -91,9 +92,21 @@ export default class UsuarioController {
                 res.status(401).json({mensagem: "senha inválida"});
                 return;
             }
+
+            const tipoUsuario: UsuarioTipo[] = await this.usuarioTipoDao.buscarUsuarioTipoPorId(usuario.codigoUsu);
+            const tipo: string[] = [];
+
+            tipoUsuario.map(({dataValues}) => {
+                if(dataValues.idTipo === 1){
+                    tipo.push('organizador');
+                }
+                if(dataValues.idTipo === 2){
+                    tipo.push('prestador');
+                }
+            });
         
             const token = jwt.sign(
-                {email},
+                {id: usuario.codigoUsu, email, tipo},
                 process.env.JWT_SECRET_LOGIN!,
                 {expiresIn: "1h"}
             );
