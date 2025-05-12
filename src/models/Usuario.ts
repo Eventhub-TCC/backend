@@ -9,7 +9,7 @@ class Usuario extends Model{
     declare nomeUsu: string;
     declare sobrenomeUsu: string;
     declare fotoUsu: string | null;
-    declare dt_nasUsu: Date;
+    declare dtNasUsu: Date;
     declare telUsu: string;
     declare cpfUsu: string;
     declare nomeEmpresa: string;
