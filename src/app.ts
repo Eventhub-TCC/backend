@@ -17,13 +17,13 @@ const {
 
 app.use(cors({origin:URL_FRONTEND}));
 app.use(express.json());
+app.use('/', express.static('public'));
 app.use('/files', express.static('uploads'));
 app.use('/users', usuarioRoute);
 app.use('/users', eventoRoute);
 app.use('/users', convidadoRoute);
 app.use('/users',tipoEventoRoute);
 app.use('/users', conviteRoute);
-
 
 sincronizarBanco();
 

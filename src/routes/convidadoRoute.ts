@@ -10,6 +10,8 @@ route.get('/obter-convidados/:idEvento', validarTokenAutenticacao, async (req, r
     await convidadoController.obterConvidados(req, res);
   });
 route.put('/atualizar-status-convidado/:idConvidado', validarTokenAutenticacao, convidadoController.atualizarStatusConvidadoController);
-
+route.get('/gerar-lista-convidados/:idEvento', validarTokenAutenticacao, async(req, res) => {
+  await convidadoController.gerarListaConvidados(req, res);
+});
 
 export default route;
