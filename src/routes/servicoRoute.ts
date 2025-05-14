@@ -8,5 +8,6 @@ const route = express.Router()
 const servicoController = new ServicoController()
 
 route.post('/services', validarTokenAutenticacao, upload.array('files',6) ,servicoController.cadastrarServico)
+route.get('/services', validarTokenAutenticacao, servicoController.listarServicos);
 
 export default route;
