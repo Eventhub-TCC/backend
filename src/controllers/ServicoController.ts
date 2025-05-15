@@ -42,4 +42,21 @@ export default class ServicoController{
             res.status(500).json({mensagem: "Erro ao buscar serviço"});
         }
     }
+    
+    public listarServicos = async (req: AuthenticatedRequest, res: Response) =>{
+        try{
+            const emailUsu = req.user!.email;
+            const servicos = await this.servicoDao.listarServicos( emailUsu );
+            if (servicos.length === 0){
+                const mensagem = "Nenhum servico encontrado";
+                res.status(404).json({mensagem});
+                return;
+            }
+            res.status(200).json(servicos);
+        }
+        catch(error){
+            console.error('Erro ao listar servicos', error);
+            res.status(500).json({mensagem: "Erro ao listar servicos"});
+        }
+    }
 }
