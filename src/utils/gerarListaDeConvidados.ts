@@ -178,7 +178,9 @@ const gerarListaDeConvidados = async (evento: Evento, convidados: Convidado[]) =
         </html>
     `;
 
-    const navegador = await puppeteer.launch();
+    const navegador = await puppeteer.launch({
+        args: ['--no-sandbox', '--disable-setuid-sandbox']
+    });
     const pagina = await navegador.newPage();
     await pagina.setContent(htmlLista, { waitUntil: 'networkidle0' });
 
