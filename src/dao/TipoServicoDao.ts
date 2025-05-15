@@ -6,4 +6,9 @@ export default class TipoServicoDao{
         const tipoServico: TipoServico[] = await TipoServico.findAll()
         return tipoServico
     }
+
+    public buscarTipoServicoPorId = async (idTipoServico: number): Promise<TipoServico | null> => {
+        const tipoServico: TipoServico | null = await TipoServico.findByPk(idTipoServico);
+        return tipoServico;
+    }
 }

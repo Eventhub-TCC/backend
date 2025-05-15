@@ -21,4 +21,9 @@ export default class ServicoDao{
         }, transaction ? {transaction} : {});
         return servico;
     }
+
+    public buscarServicoPorId = async (idServico: string):Promise<Servico | null> =>{
+        const servico: Servico | null = await Servico.findByPk(idServico);
+        return servico;
+    }
 }

@@ -1,9 +1,11 @@
 import { Request, Response } from "express";
 import ServicoDao from '../dao/ServicoDao';
 import { AuthenticatedRequest } from "../types/AuthenticatedRequest";
+import TipoServicoDao from "../dao/TipoServicoDao";
 
 export default class ServicoController{
     private servicoDao = new ServicoDao()
+    private tipoServicoDao = new TipoServicoDao()
 
     public cadastrarServico = async (req:AuthenticatedRequest, res:Response)=>{
         try{
@@ -21,6 +23,23 @@ export default class ServicoController{
         }
         catch(error){
             console.log('ocoreu um erro durante o cadastro de serviço:',error)
+        }
+    }
+
+    public obterServico = async (req: Request, res: Response) =>{
+        try{
+            const { idServico } = req.params;
+            const servico = await this.servicoDao.buscarServicoPorId(idServico);
+            if (!servico){
+                res.status(404).json({mensagem: "Serviço não encontrado"});
+                return;
+            }
+            const tipoServico = await this.tipoServicoDao.buscarTipoServicoPorId(servico.dataValues.idTipoServico);
+            res.status(200).json({...servico.dataValues, tipoServico: tipoServico?.dataValues});
+        }
+        catch(error){
+            console.error('Erro ao buscar serviço', error);
+            res.status(500).json({mensagem: "Erro ao buscar serviço"});
         }
     }
 }
