@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import ServicoDao from '../dao/ServicoDao';
 import { AuthenticatedRequest } from "../types/AuthenticatedRequest";
 import TipoServicoDao from "../dao/TipoServicoDao";
+import { deletarImagemServidor } from "../utils/deletarImagemServidor";
 
 export default class ServicoController{
     private servicoDao = new ServicoDao()
@@ -59,4 +60,71 @@ export default class ServicoController{
             res.status(500).json({mensagem: "Erro ao listar servicos"});
         }
     }
+
+    public editarServico = async (req: Request, res: Response) =>{
+        const { idServico } = req.params;
+
+
+        const {
+            nomeServico,
+            descricaoServico,
+            idTipoServico,
+            unidadeCobranca,
+            valorServico,
+            qntMinima,
+            qntMaxima,
+        } = req.body;
+
+        let imagensServico = req.file?.filename || null
+
+
+        
+      
+        try {
+          const servicoAtualizado = await this.servicoDao.editarServico(Number(idServico), {
+            nomeServico,
+            descricaoServico,
+            idTipoServico,
+            unidadeCobranca,
+            valorServico,
+            qntMinima,
+            qntMaxima,
+          });
+
+      
+          if (!servicoAtualizado) {
+            return res.status(404).json({ message: 'Serviço não encontrado' });
+          }
+      
+          return res.status(200).json({
+            message: 'Serviço atualizado com sucesso',
+            servico: servicoAtualizado,
+          });
+        } catch (error) {
+          console.error('Erro ao editar servico:', error);
+          return res.status(500).json({ message: 'Erro interno ao editar servico' });
+        }
+      };
+
+        public deletarServico = async (req: Request, res: Response) => {
+            try{
+                const { idServico } = req.params; 
+                const servico = await this.servicoDao.buscarServicoPorId(idServico)
+                if (!servico){
+                    const mensagem = "Serviço não encontrado";
+                    res.status(404).json({mensagem});
+                    return;
+                }
+                else{
+                    // if(servico.dataValues.imagemServico)
+                    // deletarImagemServidor(servico.dataValues.imagemServico)
+                }
+                await this.servicoDao.deletarServico(idServico)
+                res.status(200).json({mensagem: "Serviço deletado com sucesso"});
+            }
+            catch (error) {
+                console.error('Erro ao deletar Serviço', error);
+                res.status(500).json({ mensagem: "Erro ao deletar Serviço" });
+            }
+        }
 }

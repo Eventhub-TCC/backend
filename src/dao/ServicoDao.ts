@@ -46,4 +46,42 @@ export default class ServicoDao{
         });
         return servicos;
     }
+
+    public editarServico = async (  id: number,
+        dadosAtualizados: {
+            nomeServico: string,
+            descricaoServico: string,
+            idTipoServico : string,
+            unidadeCobranca: string,
+            valorServico: string,
+            qntMinima: string,
+            qntMaxima: string,
+        }
+      ) => {
+        const servico = await Servico.findByPk(id);
+        
+      
+        if (!servico) {
+          return null;
+        }
+        await servico.update({
+          nomeServico: dadosAtualizados.nomeServico,
+          descricaoServico: dadosAtualizados.descricaoServico,
+          idTipoServico: dadosAtualizados.idTipoServico,
+          unidadeCobranca: dadosAtualizados.unidadeCobranca,
+          valorServico: dadosAtualizados.valorServico,
+          qntMinima: dadosAtualizados.qntMinima,
+          qntMaxima: dadosAtualizados.qntMaxima,
+        });
+      
+        return servico;
+    }
+
+        public deletarServico = async (idServico: string) => {
+        await Servico.destroy({
+            where: {
+                idServico
+            }
+        });
+    }
 }
