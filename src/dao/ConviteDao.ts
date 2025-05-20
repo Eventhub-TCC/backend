@@ -106,6 +106,18 @@ export default class ConviteDao {
   
     return evento;
   };
+
+  public async verificarConvite(idConvite: string): Promise<Convite | null> {
+    const convite = await Convite.findOne({
+      where: { idConvite }
+    });
+  
+    if (!convite) {
+      throw new Error('Convite não encontrado');
+    }
+  
+    return convite;
+  }
 }
 
 

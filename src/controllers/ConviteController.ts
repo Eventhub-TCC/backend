@@ -83,4 +83,14 @@ export default class ConvidadoController {
       res.status(404).json({ erro: err.message });
     }
   };
+
+  public verificarConvite = async (req: Request, res: Response) => {
+    try {
+      const { idConvite } = req.params;
+      const convite = await this.conviteDao.verificarConvite(idConvite);
+      res.json(convite);
+    } catch (err: any) {
+      res.status(404).json({ erro: err.message });
+    }
+  }
 }
