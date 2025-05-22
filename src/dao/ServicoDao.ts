@@ -56,6 +56,12 @@ export default class ServicoDao{
             valorServico: string,
             qntMinima: string,
             qntMaxima: string,
+            imagem1: string,
+            imagem2: string | null,
+            imagem3: string | null,
+            imagem4: string | null,
+            imagem5: string | null,
+            imagem6: string | null
         }
       ) => {
         const servico = await Servico.findByPk(id);
