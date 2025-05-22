@@ -1,11 +1,10 @@
-import { Model, DataTypes, INTEGER } from 'sequelize';
+import { Model, DataTypes } from 'sequelize';
 import { sequelize } from '../config/database';
-import Evento from './Evento';
 import Convite from './Convite';
-
+import Acompanhante from './Acompanhante';
 
 class Convidado extends Model {
-  declare idConvidado: number;
+  declare idConvidado: string;
   declare nome: string;
   declare email: string;
   declare dataNascimento: Date;
@@ -26,21 +25,28 @@ Convidado.init({
     },
     email: {
       type: DataTypes.STRING,
-      allowNull: false,
-      unique: true
+      allowNull: false
     },
     dataNascimento: {
       type: DataTypes.DATEONLY,
-      allowNull: true
+      allowNull: false
     },
     rg: {
       type: DataTypes.STRING,
-      allowNull: true,
-      unique: true
+      allowNull: false,
+      unique: false
     },
     status: {
       type: DataTypes.STRING,
-      allowNull: true
+      allowNull: false
+    },
+    idConvite: {
+      type: DataTypes.UUID,
+      allowNull: false,
+      references: {
+        model: Convite,
+        key: 'id_convite'
+      }
     }
   }, {
   sequelize,
@@ -50,9 +56,21 @@ Convidado.init({
   underscored: true
 });
 
+Convidado.belongsTo(Convite, { foreignKey: 'idConvite', as: 'Convite' });
+Convite.hasMany(Convidado, { foreignKey: 'idConvite', as: 'Convidados' });
 
-Convidado.hasOne(Convite, { foreignKey: 'idConvidado', as: 'Convite' });
-Convite.belongsTo(Convidado, { foreignKey: 'idConvidado', as: 'Convidado' });
+Convidado.belongsToMany(Convidado, {
+  through: Acompanhante,
+  as: 'Acompanhantes',             
+  foreignKey: 'idConvidado',
+  otherKey: 'idAcompanhante'
+});
 
+Convidado.belongsToMany(Convidado, {
+  through: Acompanhante,
+  as: 'Convidador',                
+  foreignKey: 'idAcompanhante',
+  otherKey: 'idConvidado'
+});
 
 export default Convidado;

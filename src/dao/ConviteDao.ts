@@ -1,14 +1,14 @@
 import Convite from '../models/Convite';
-import Convidado from '../models/Convidado';
 import { v4 as uuidv4 } from 'uuid';
 import Evento from '../models/Evento';
+import { Transaction } from 'sequelize';
 
 export default class ConviteDao {
   public listarConvite = async (idEvento: string) => {
     const convites = await Convite.findAll({
       where: {
         idEvento
-        },
+      },
     });
     console.log("convites", convites);
     return convites;
@@ -16,14 +16,11 @@ export default class ConviteDao {
 
   public async gerarConvite(idEvento: number): Promise<Convite> {
     const uuidConvite = uuidv4();
-    const link = `http://localhost:5173/confirmar-presenca/${uuidConvite}`;
     const dataConvite = new Date();
 
     const novoConvite = await Convite.create({
       idConvite: uuidConvite,
       idEvento,
-      idConvidado: null,
-      linkConvite: link,
       dataConvite,
       status: 'Pendente'
     });
@@ -36,7 +33,7 @@ export default class ConviteDao {
       const convite = await Convite.destroy({
         where: { idConvite: idConvite }
       });
-  
+
       if (!convite) {
         throw new Error("Convite não encontrado");
       }
@@ -47,39 +44,23 @@ export default class ConviteDao {
     }
   };
 
-  public async confirmarConvite (
-    idConvite: string,
-    nome: string,
-    email: string,
-    rg: string,
-    dataNascimento: Date
-  ): Promise<Convidado> {
+  public async confirmarConvite(idConvite: string, transaction: Transaction | null = null): Promise<Convite> {
     const convite = await Convite.findByPk(idConvite);
-    console.log('idConvite',idConvite)
-  
+
     if (!convite) {
       throw new Error("Convite não encontrado.");
     }
-  
+
     if (convite.status === "Utilizado") {
       throw new Error("Convite já foi utilizado.");
     }
-  
-    const novoConvidado = await Convidado.create({
-      nome,
-      email,
-      rg,
-      dataNascimento,
-      status: "Pendente",
-      idConvite,
-    });
-  
-    // Atualiza o status do convite
+
     await convite.update({
-        idConvidado: novoConvidado.idConvidado, 
-        status: "Utilizado", 
-  });
-    return novoConvidado;
+        status: "Utilizado",
+      }, { transaction }
+    );
+
+    return convite;
   };
 
   public async buscarEventoPorConvite(idConvite: string): Promise<Evento> {
@@ -87,23 +68,22 @@ export default class ConviteDao {
     if (!convite) {
       throw new Error('Convite não encontrado');
     }
-  
+
     const idEvento = convite.idEvento;
-  
 
     const evento = await Evento.findOne({
       where: { idEvento },
       attributes: [
-        'idEvento', 'nomeEvento', 'descricaoEvento', 'imagemEvento', 'dataEvento', 'horaInicio', 'horaFim',   
+        'idEvento', 'nomeEvento', 'descricaoEvento', 'imagemEvento', 'dataEvento', 'horaInicio', 'horaFim',
         'cepLocal', 'enderecoLocal', 'numeroLocal', 'complementoLocal',
         'bairroLocal', 'cidadeLocal', 'ufLocal'
       ]
     });
-  
+
     if (!evento) {
       throw new Error('Evento não encontrado');
     }
-  
+
     return evento;
   };
 
@@ -111,11 +91,11 @@ export default class ConviteDao {
     const convite = await Convite.findOne({
       where: { idConvite }
     });
-  
+
     if (!convite) {
       throw new Error('Convite não encontrado');
     }
-  
+
     return convite;
   }
 }

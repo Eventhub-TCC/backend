@@ -178,7 +178,13 @@ export default class UsuarioController {
         }
     }
 
-    public autenticarUsuario = async (req: Request, res: Response) => {
+    public autenticarUsuario = async (req: AuthenticatedRequest, res: Response) => {
+        const email = req.user!.email;
+        const usuario: Usuario | null = await this.usuarioDao.buscarUsuarioPorEmail(email);
+        if(!usuario){
+            res.status(401).json({mensagem: "Usuário não autenticado"});
+            return;
+        }
         res.status(200).json({mensagem: "Usuário autenticado com sucesso!"});
     }
 
