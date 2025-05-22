@@ -75,11 +75,13 @@ export default class ServicoController{
             qntMaxima,
         } = req.body;
 
-        let imagensServico = req.file?.filename || null
-
-
-        
-      
+        const imagens = req.files as Express.Multer.File[]
+            const imagem1 = imagens[0].filename
+            const imagem2 = imagens[1] ? imagens[1].filename : null
+            const imagem3 = imagens[2] ? imagens[2].filename : null
+            const imagem4 = imagens[3] ? imagens[3].filename : null
+            const imagem5 = imagens[4] ? imagens[4].filename : null
+            const imagem6 = imagens[5] ? imagens[5].filename : null
         try {
           const servicoAtualizado = await this.servicoDao.editarServico(Number(idServico), {
             nomeServico,
@@ -89,6 +91,12 @@ export default class ServicoController{
             valorServico,
             qntMinima,
             qntMaxima,
+            imagem1,
+            imagem2,
+            imagem3,
+            imagem4,
+            imagem5,
+            imagem6
           });
 
       
@@ -116,8 +124,19 @@ export default class ServicoController{
                     return;
                 }
                 else{
-                    // if(servico.dataValues.imagemServico)
-                    // deletarImagemServidor(servico.dataValues.imagemServico)
+                    const imagens = [
+                        servico.dataValues.imagem1,
+                        servico.dataValues.imagem2,
+                        servico.dataValues.imagem3,
+                        servico.dataValues.imagem4,
+                        servico.dataValues.imagem5,
+                        servico.dataValues.imagem6
+                    ]
+                    imagens.map((imagem)=>{
+                        if(imagem){
+                            deletarImagemServidor(imagem)
+                        }
+                    })
                 }
                 await this.servicoDao.deletarServico(idServico)
                 res.status(200).json({mensagem: "Serviço deletado com sucesso"});
