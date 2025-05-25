@@ -16,16 +16,54 @@ export default class ConvidadoDao {
   };
 
   public listarConvidados = async (idEvento: string) => {
-        const convidados = await Convidado.findAll({
-            include: [{
-                model: Convite,
-                as: 'Convite',
-                where: {
-                  idEvento
-                }
-              }],
-        });
-    return convidados;
+    const convidados = await Convidado.findAll({
+      include: [
+        {
+          model: Convite,
+          as: 'convite',
+          where: {
+            idEvento
+          }
+        },
+        {
+          model: Convidado,
+          as: 'acompanhantes',
+          through: {
+            attributes: ['relacionamento'],
+          },
+          attributes: ['idConvidado', 'nome', 'email', 'rg', 'dataNascimento', 'status'],
+        }
+      ],
+    });
+
+    const idsAcompanhantes: string[] = [];
+
+    for(const convidado of convidados) {
+      for(const acompanhante of convidado.acompanhantes || []) {
+        idsAcompanhantes.push(acompanhante.idConvidado);
+      }
+    }
+
+    const convidadosPrincipais = convidados.filter((convidado) => !idsAcompanhantes.includes(convidado.idConvidado));
+
+    return convidadosPrincipais.map((convidado) => ({
+      idConvidado: convidado.idConvidado,
+      nome: convidado.nome,
+      email: convidado.email,
+      rg: convidado.rg,
+      dataNascimento: convidado.dataNascimento,
+      status: convidado.status,
+      idConvite: convidado.idConvite,
+      acompanhantes: convidado.acompanhantes?.map((acompanhante: Convidado) => ({
+        idConvidado: acompanhante.idConvidado,
+        nome: acompanhante.nome,
+        email: acompanhante.email,
+        rg: acompanhante.rg,
+        dataNascimento: acompanhante.dataNascimento,
+        status: acompanhante.status,
+        relacionamento: (acompanhante as any).Acompanhante.relacionamento
+      })) || []
+    }));
   };
 
   public atualizarStatusConvidadoDAO = async (idConvidado: string, status: string) => {

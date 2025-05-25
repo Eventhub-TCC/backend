@@ -10,6 +10,8 @@ class Convidado extends Model {
   declare dataNascimento: Date;
   declare rg: string;
   declare status: string;
+  declare idConvite: string;
+  declare acompanhantes?: Convidado[];
 }
 
 Convidado.init({
@@ -56,19 +58,19 @@ Convidado.init({
   underscored: true
 });
 
-Convidado.belongsTo(Convite, { foreignKey: 'idConvite', as: 'Convite' });
-Convite.hasMany(Convidado, { foreignKey: 'idConvite', as: 'Convidados' });
+Convidado.belongsTo(Convite, { foreignKey: 'idConvite', as: 'convite' });
+Convite.hasMany(Convidado, { foreignKey: 'idConvite', as: 'convidados' });
 
 Convidado.belongsToMany(Convidado, {
   through: Acompanhante,
-  as: 'Acompanhantes',             
+  as: 'acompanhantes',             
   foreignKey: 'idConvidado',
   otherKey: 'idAcompanhante'
 });
 
 Convidado.belongsToMany(Convidado, {
   through: Acompanhante,
-  as: 'Convidador',                
+  as: 'convidador',                
   foreignKey: 'idAcompanhante',
   otherKey: 'idConvidado'
 });

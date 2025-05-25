@@ -2,9 +2,25 @@ import Convidado from "../models/Convidado";
 import Evento from "../models/Evento";
 import puppeteer from 'puppeteer';
 
+interface ConvidadoDTO {
+    idConvidado: string;
+    nome: string;
+    email: string;
+    rg: string;
+    dataNascimento: Date;
+    status: string;
+    idConvite: string;
+    acompanhantes: Array<{
+        idConvidado: string;
+        nome: string;
+        email: string;
+        relacionamento: string;
+    }>;
+}
+
 const { URL_BACKEND, SERVER_PORT } = process.env;
 
-const gerarListaDeConvidados = async (evento: Evento, convidados: Convidado[]) => {
+const gerarListaDeConvidados = async (evento: Evento, convidados: ConvidadoDTO[]) => {
     const htmlLista = `
         <!DOCTYPE html>
         <html lang="pt-br">
