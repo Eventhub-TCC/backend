@@ -78,6 +78,12 @@ export default class ServicoDao{
           valorServico: dadosAtualizados.valorServico,
           qntMinima: dadosAtualizados.qntMinima,
           qntMaxima: dadosAtualizados.qntMaxima,
+            imagem1: dadosAtualizados.imagem1,
+            imagem2: dadosAtualizados.imagem2,
+            imagem3: dadosAtualizados.imagem3,
+            imagem4: dadosAtualizados.imagem4,
+            imagem5: dadosAtualizados.imagem5,
+            imagem6: dadosAtualizados.imagem6
         });
       
         return servico;
