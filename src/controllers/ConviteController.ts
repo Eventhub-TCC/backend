@@ -4,12 +4,14 @@ import { sequelize } from '../config/database';
 import { Transaction } from 'sequelize';
 import AcompanhanteDao from '../dao/AcompanhanteDao';
 import ConvidadoDao from '../dao/ConvidadoDao';
+import EventoDao from '../dao/EventoDao';
 
 export default class ConviteController {
 
   private conviteDao = new ConviteDao();
   private convidadoDao = new ConvidadoDao();
   private acompanhanteDao = new AcompanhanteDao();
+  private eventoDao = new EventoDao();
   
   public obterConvite = async (req: Request, res: Response) => {
     try {
@@ -28,13 +30,26 @@ export default class ConviteController {
   public gerarConvite = async (req: Request, res: Response) => {
     try {
       const { idEvento } = req.params;
+      const { qtdMaxAcompanhantes, qtdMaxAcompanhantesEvento } = req.body;
 
       if (!idEvento) {
         return res.status(400).json({ mensagem: 'ID do evento é obrigatório.' });
       }
 
-      const convite = await this.conviteDao.gerarConvite(Number(idEvento));
-      return res.status(201).json({ linkConvite: `${process.env.URL_FRONTEND}/confirmar-presenca/${convite.idConvite}` });
+      if (Number(qtdMaxAcompanhantes) < 0 || Number(qtdMaxAcompanhantes) > 99) {
+        return res.status(400).json({ message: 'A quantidade máxima de acompanhantes deve ser entre 0 a 99' });
+      }
+
+      if(qtdMaxAcompanhantesEvento){
+        const evento = await this.eventoDao.buscarEventoporId(idEvento);
+        if (!evento) {
+          return res.status(404).json({ mensagem: 'Evento não encontrado.' });
+        }
+        await this.eventoDao.atualizarQtdMaxAcompanhantes(idEvento, qtdMaxAcompanhantes);
+      }
+
+      const convite = await this.conviteDao.gerarConvite(Number(idEvento), Number(qtdMaxAcompanhantes));
+      return res.status(201).json({ convite });
 
     } catch (error) {
       console.error('Erro ao gerar convite:', error);
@@ -43,14 +58,18 @@ export default class ConviteController {
   };
 
   public deletarConvite = async (req: Request, res: Response) => {
-    const { idConvite } = req.params; // Recebe o id do convite por parâmetro
+    const { idConvite } = req.params; 
   
     try {
-      const resultado = await this.conviteDao.deletarConvite(idConvite);
-      if (resultado) {
-        return res.status(200).json({ message: "Convite deletado com sucesso" });
+      const convite = await this.conviteDao.verificarConvite(idConvite);
+      if (!convite) {
+        return res.status(404).json({ message: "Convite não encontrado" });
       }
-      return res.status(404).json({ message: "Convite não encontrado" });
+      if( convite.status === "Utilizado") {
+        return res.status(400).json({ message: "Convite já foi utilizado e não pode ser deletado" });
+      }
+      await this.conviteDao.deletarConvite(idConvite);
+      return res.status(200).json({ message: "Convite deletado com sucesso" });
     } catch (error) {
       console.error("Erro ao deletar convite:", error);
       return res.status(500).json({ message: "Erro interno do servidor" });

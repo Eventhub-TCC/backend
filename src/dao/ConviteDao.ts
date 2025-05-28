@@ -14,7 +14,7 @@ export default class ConviteDao {
     return convites;
   }
 
-  public async gerarConvite(idEvento: number): Promise<Convite> {
+  public async gerarConvite(idEvento: number, qtdMaxAcompanhantes: number): Promise<Convite> {
     const uuidConvite = uuidv4();
     const dataConvite = new Date();
 
@@ -22,7 +22,8 @@ export default class ConviteDao {
       idConvite: uuidConvite,
       idEvento,
       dataConvite,
-      status: 'Pendente'
+      status: 'Pendente',
+      qtdMaxAcompanhantes
     });
 
     return novoConvite;
@@ -76,7 +77,7 @@ export default class ConviteDao {
       attributes: [
         'idEvento', 'nomeEvento', 'descricaoEvento', 'imagemEvento', 'dataEvento', 'horaInicio', 'horaFim',
         'cepLocal', 'enderecoLocal', 'numeroLocal', 'complementoLocal',
-        'bairroLocal', 'cidadeLocal', 'ufLocal'
+        'bairroLocal', 'cidadeLocal', 'ufLocal', 'qtdMaxAcompanhantes'
       ]
     });
 
