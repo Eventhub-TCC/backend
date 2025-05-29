@@ -1,4 +1,3 @@
-import Convidado from "../models/Convidado";
 import Evento from "../models/Evento";
 import puppeteer from 'puppeteer';
 
@@ -14,6 +13,8 @@ interface ConvidadoDTO {
         idConvidado: string;
         nome: string;
         email: string;
+        dataNascimento: Date;
+        rg: string;
         relacionamento: string;
     }>;
 }
@@ -21,6 +22,9 @@ interface ConvidadoDTO {
 const { URL_BACKEND, SERVER_PORT } = process.env;
 
 const gerarListaDeConvidados = async (evento: Evento, convidados: ConvidadoDTO[]) => {
+    const qtdConvidados = convidados.length;
+    const qtdAcompanhantes = convidados.reduce((acumulador, convidado) => acumulador + convidado.acompanhantes.length, 0);
+
     const htmlLista = `
         <!DOCTYPE html>
         <html lang="pt-br">
@@ -113,6 +117,15 @@ const gerarListaDeConvidados = async (evento: Evento, convidados: ConvidadoDTO[]
                     display: inline-block;
                 }
 
+                .convidados-informacoes{
+                    font-size: 12px;
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    gap: 16px;
+                    margin-bottom: 8px;
+                }
+
                 .tabela-convidados{
                     width: 100%;
                     border-collapse: collapse;
@@ -129,15 +142,24 @@ const gerarListaDeConvidados = async (evento: Evento, convidados: ConvidadoDTO[]
                     line-height: normal;
                 }
                 
-                .tabela-convidados tr:nth-child(even){
-                    background-color: #F2F2F2;
-                }
-                
                 .tabela-convidados th,
                 .tabela-convidados td{
                     padding: 12px 16px;
                     text-align: center;
                     border-bottom: 1px solid #ddd;
+                }
+
+                .linha-acompanhante td{
+                    background-color: #E0E0E0;
+                    padding: 4px 16px;
+                    font-weight: 500;
+                    color: #333;
+                    font-size: 10px;
+                }
+
+                .relacionamento{
+                    font-size: 8px;
+                    color: #6A40C3; 
                 }
             </style>
         </head>
@@ -166,6 +188,11 @@ const gerarListaDeConvidados = async (evento: Evento, convidados: ConvidadoDTO[]
                     </div>
                 </div>
             </div>
+            <div class="convidados-informacoes">
+                <p>Convidados: ${qtdConvidados}</p>
+                <p>Acompanhantes: ${qtdAcompanhantes}</p>
+                <p>Total: ${qtdConvidados + qtdAcompanhantes}</p>
+            </div>
             <table class="tabela-convidados">
                 <thead>
                     <tr>
@@ -182,10 +209,38 @@ const gerarListaDeConvidados = async (evento: Evento, convidados: ConvidadoDTO[]
                             <tr>
                                 <td>${index + 1}</td>
                                 <td>${convidado.nome}</td>
-                                <td>${convidado.email}</td>
+                                <td>
+                                    <div>${convidado.email.split('@')[0]}</div>
+                                    <div>@${convidado.email.split('@')[1]}</div>
+                                </td>
                                 <td>${convidado.dataNascimento.toString().split('T')[0].split('-').reverse().join('/')}</td>
                                 <td>${`${convidado.rg.slice(0, 2)}.${convidado.rg.slice(2, 5)}.${convidado.rg.slice(5, 8)}-${convidado.rg.slice(8)}`}</td>
                             </tr>
+                            ${
+                                convidado.acompanhantes.length > 0 ?
+                                `   
+                                    ${
+                                        convidado.acompanhantes.map((acompanhante, index2) => 
+                                            `
+                                                <tr class="linha-acompanhante">
+                                                    <td>${index + 1}.${index2 + 1}</td>
+                                                    <td>
+                                                        <div>${acompanhante.nome}</div>
+                                                        <div class="relacionamento">(${acompanhante.relacionamento})</div>
+                                                    </td>
+                                                    <td>
+                                                        <div>${acompanhante.email.split('@')[0]}</div>
+                                                        <div>@${acompanhante.email.split('@')[1]}</div>
+                                                    </td>
+                                                    <td>${acompanhante.dataNascimento.toString().split('T')[0].split('-').reverse().join('/')}</td>
+                                                    <td>${`${acompanhante.rg.slice(0, 2)}.${acompanhante.rg.slice(2, 5)}.${acompanhante.rg.slice(5, 8)}-${acompanhante.rg.slice(8)}`}</td>
+                                                </tr>
+                                            `
+                                        ).join('')
+                                    }
+                                ` 
+                                : ''
+                            }
                         `)).join('')
                     }
                 </tbody>

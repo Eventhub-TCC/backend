@@ -68,12 +68,23 @@ export default class ConvidadoDao {
 
   public atualizarStatusConvidadoDAO = async (idConvidado: string, status: string) => {
     try {
-      const convidado = await Convidado.findByPk(idConvidado);
+      const convidado = await Convidado.findByPk(idConvidado, {
+        include: [{
+          association: 'acompanhantes',
+          through: {attributes: []}
+        }]
+      });
       if (!convidado) {
         throw new Error('Convidado não encontrado');
       }
       convidado.status = status;
       await convidado.save();
+
+      if(convidado.acompanhantes?.length) {
+        const idsAcompanhantes = convidado.acompanhantes.map(a => a.idConvidado);
+        await Convidado.update({ status }, { where: { idConvidado: idsAcompanhantes } });
+      }
+
       return convidado;
     } catch (error) {
       console.error('Erro ao atualizar status do convidado:', error);
