@@ -62,25 +62,62 @@ export default class ServicoController{
     }
 
     public editarServico = async (req: Request, res: Response) =>{
-        const { idServico } = req.params;
-
-
-        const {
-            nomeServico,
-            descricaoServico,
-            idTipoServico,
-            unidadeCobranca,
-            valorServico,
-            qntMinima,
-            qntMaxima,
-        } = req.body;
-
-        let imagensServico = req.file?.filename || null
-
-
-        
-      
         try {
+            const { idServico } = req.params;
+
+            const servicoAntigo = await this.servicoDao.buscarServicoPorId(idServico);
+            const imagensAntigas = [
+                servicoAntigo?.dataValues.imagem1,
+                servicoAntigo?.dataValues.imagem2,
+                servicoAntigo?.dataValues.imagem3,
+                servicoAntigo?.dataValues.imagem4,
+                servicoAntigo?.dataValues.imagem5,
+                servicoAntigo?.dataValues.imagem6
+            ].filter((imagem) => imagem !== null);
+
+
+            const {
+                nomeServico,
+                descricaoServico,
+                idTipoServico,
+                unidadeCobranca,
+                valorServico,
+                qntMinima,
+                qntMaxima,
+                imagensMantidas,
+            } = req.body;
+
+            let imagensMantidasLista = imagensMantidas
+            if (!Array.isArray(imagensMantidasLista)) {
+                imagensMantidasLista = imagensMantidasLista ? [imagensMantidasLista] : []
+            }
+
+            if (imagensMantidasLista.length === 0) {
+                imagensAntigas.map((imagem) => {
+                    if (imagem) {
+                        deletarImagemServidor(imagem);
+                    }
+                });
+            }
+
+            imagensMantidasLista.map((imagem:string)=>{
+                const imagemAntigasExcluidas = imagensAntigas.filter((img) => img !== imagem);
+                imagemAntigasExcluidas.map((imagem)=>{
+                    deletarImagemServidor(imagem);
+                })
+                
+            })
+
+            const arquivos = req.files as Express.Multer.File[]
+            const imagens = [...imagensMantidasLista,...arquivos.map((file)=> file.filename)]
+                const imagem1 = imagens[0]
+                const imagem2 = imagens[1] ? imagens[1] : null
+                const imagem3 = imagens[2] ? imagens[2] : null
+                const imagem4 = imagens[3] ? imagens[3] : null
+                const imagem5 = imagens[4] ? imagens[4] : null
+                const imagem6 = imagens[5] ? imagens[5] : null
+                console.log('imagens', imagens);
+        
           const servicoAtualizado = await this.servicoDao.editarServico(Number(idServico), {
             nomeServico,
             descricaoServico,
@@ -89,6 +126,12 @@ export default class ServicoController{
             valorServico,
             qntMinima,
             qntMaxima,
+            imagem1,
+            imagem2,
+            imagem3,
+            imagem4,
+            imagem5,
+            imagem6
           });
 
       
@@ -116,8 +159,19 @@ export default class ServicoController{
                     return;
                 }
                 else{
-                    // if(servico.dataValues.imagemServico)
-                    // deletarImagemServidor(servico.dataValues.imagemServico)
+                    const imagens = [
+                        servico.dataValues.imagem1,
+                        servico.dataValues.imagem2,
+                        servico.dataValues.imagem3,
+                        servico.dataValues.imagem4,
+                        servico.dataValues.imagem5,
+                        servico.dataValues.imagem6
+                    ]
+                    imagens.map((imagem)=>{
+                        if(imagem){
+                            deletarImagemServidor(imagem)
+                        }
+                    })
                 }
                 await this.servicoDao.deletarServico(idServico)
                 res.status(200).json({mensagem: "Serviço deletado com sucesso"});
