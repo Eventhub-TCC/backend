@@ -181,4 +181,58 @@ export default class ServicoController{
                 res.status(500).json({ mensagem: "Erro ao deletar Serviço" });
             }
         }
+
+        public anunciarServico = async (req: Request, res: Response) => {
+            try {
+                const { idServico } = req.params;
+                const { dataInicioAnuncio, dataTerminoAnuncio } = req.body;
+                const servico = await this.servicoDao.buscarServicoPorId(idServico);
+                if (!servico) {
+                    return res.status(404).json({ mensagem: "Serviço não encontrado" });
+                }
+                if (servico.dataValues.anunciado) {
+                    return res.status(400).json({ mensagem: "Serviço já está anunciado" });
+                }
+                await this.servicoDao.anunciarServico(
+                    idServico,
+                    new Date(dataInicioAnuncio),
+                    new Date(dataTerminoAnuncio)
+                );
+                res.status(200).json({ mensagem: "Serviço anunciado com sucesso" });
+            } catch (error) {
+                console.error('Erro ao anunciar serviço:', error);
+                res.status(500).json({ mensagem: "Erro interno ao anunciar serviço" });
+            }
+        }
+
+        public encerrarAnuncioServico = async (req: Request, res: Response) => {
+            try {
+                const { idServico } = req.params;
+                const servico = await this.servicoDao.buscarServicoPorId(idServico);
+                if (!servico) {
+                    return res.status(404).json({ mensagem: "Serviço não encontrado" });
+                }
+                if (!servico.dataValues.anunciado) {
+                    return res.status(400).json({ mensagem: "Serviço não está anunciado" });
+                }
+                await this.servicoDao.encerrarAnuncioServico(idServico);
+                res.status(200).json({ mensagem: "Anúncio encerrado com sucesso" });
+            } catch (error) {
+                console.error('Erro ao cancelar anúncio:', error);
+                res.status(500).json({ mensagem: "Erro interno ao cancelar anúncio" });
+            }
+        }
+
+        public consultarServicosAnunciados = async (req: Request, res: Response) => {
+            try {
+                const servicos = await this.servicoDao.consultarServicosAnunciados();
+                if (servicos.length === 0) {
+                    return res.status(404).json({ mensagem: "Nenhum serviço anunciado encontrado" });
+                }
+                res.status(200).json(servicos);
+            } catch (error) {
+                console.error('Erro ao consultar serviços anunciados:', error);
+                res.status(500).json({ mensagem: "Erro interno ao consultar serviços anunciados" });
+            }
+        }
 }

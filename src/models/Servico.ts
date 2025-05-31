@@ -19,6 +19,9 @@ class Servico extends Model{
     declare imagem4: string;
     declare imagem5: string;
     declare imagem6: string;
+    declare anunciado: boolean;
+    declare dataInicioAnuncio: Date | null;
+    declare dataFimAnuncio: Date | null;
 }
 
 Servico.init(
@@ -92,6 +95,19 @@ Servico.init(
                 model:Usuario,
                 key:'codigo_usu'
             }
+        },
+        anunciado:{
+            type:DataTypes.BOOLEAN,
+            defaultValue: false,
+            allowNull:true
+        },
+        dataInicioAnuncio:{
+            type:DataTypes.DATE,
+            allowNull:true
+        },
+        dataFimAnuncio:{
+            type:DataTypes.DATE,
+            allowNull:true
         }
     },{
         sequelize,

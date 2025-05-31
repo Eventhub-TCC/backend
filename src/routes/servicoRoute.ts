@@ -14,5 +14,14 @@ route.put('/services/:idServico', validarTokenAutenticacao, upload.array("files"
     await servicoController.editarServico(req, res);
 });
 route.delete('/:idUsuario/services/:idServico', validarTokenAutenticacao, servicoController.deletarServico);
-
+route.put('/services/:idServico/anunciar', validarTokenAutenticacao, async (req, res) => {
+        await servicoController.anunciarServico(req, res);
+});
+route.put('/services/:idServico/encerrar-anuncio', validarTokenAutenticacao, async (req, res) => {
+    await servicoController.encerrarAnuncioServico(req, res);
+}
+);
+route.get('/services/obter-anuncios', validarTokenAutenticacao, async (req, res) => {
+    await servicoController.consultarServicosAnunciados(req, res);
+});
 export default route;

@@ -1,4 +1,4 @@
-import { Transaction } from "sequelize";
+import { Op, Transaction } from "sequelize";
 import Servico from '../models/Servico';
 import Usuario from "../models/Usuario";
 
@@ -95,5 +95,79 @@ export default class ServicoDao{
                 idServico
             }
         });
+    }
+
+    public anunciarServico = async (idServico: string, dataInicioAnuncio: Date, dataFimAnuncio: Date) => {
+        const servico: Servico | null = await Servico.findByPk(idServico);
+        if (!servico) {
+            throw new Error("Serviço não encontrado");
+        }
+        
+        servico.dataInicioAnuncio = dataInicioAnuncio;
+        servico.dataFimAnuncio = dataFimAnuncio;
+        servico.anunciado = true;
+
+        await servico.save();
+        return servico;
+    }
+
+    public encerrarAnuncioServico = async (idServico: string) => {
+        const servico: Servico | null = await Servico.findByPk(idServico);
+        if (!servico) {
+            throw new Error("Serviço não encontrado");
+        }
+        
+        servico.dataInicioAnuncio = null;
+        servico.dataFimAnuncio = null;
+        servico.anunciado = false;
+
+        await servico.save();
+        return servico;
+    }
+
+    public desativarAnunciosExpirados = async () => {
+        const dataAtual = new Date();
+
+        await Servico.update(
+            {
+                anunciado: false,
+                dataInicioAnuncio: null,
+                dataFimAnuncio: null,
+            },
+            {
+                where: {
+                    anunciado: true,
+                    dataFimAnuncio: {
+                        [Op.lt]: dataAtual,
+                    },
+                },
+            }
+        );
+    };
+
+    public consultarServicosAnunciados = async () => {
+        const dataAtual = new Date();
+
+        const servicosAnunciados: Servico[] = await Servico.findAll({
+        where: {
+            anunciado: true,
+            [Op.and]: [
+            {
+                [Op.or]: [
+                { dataInicioAnuncio: { [Op.lte]: dataAtual } },
+                { dataInicioAnuncio: null }
+                ]
+            },
+            {
+                [Op.or]: [
+                { dataFimAnuncio: { [Op.gte]: dataAtual } },
+                { dataFimAnuncio: null }
+                ]
+            }
+            ]
+        }
+        });
+
+        return servicosAnunciados;
     }
 }
