@@ -97,7 +97,7 @@ export default class ServicoDao{
         });
     }
 
-    public anunciarServico = async (idServico: string, dataInicioAnuncio: Date, dataFimAnuncio: Date) => {
+    public anunciarServico = async (idServico: string, dataInicioAnuncio: Date | null, dataFimAnuncio: Date | null) => {
         const servico: Servico | null = await Servico.findByPk(idServico);
         if (!servico) {
             throw new Error("Serviço não encontrado");

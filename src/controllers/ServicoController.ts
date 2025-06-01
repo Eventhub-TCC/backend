@@ -193,11 +193,12 @@ export default class ServicoController{
                 if (servico.dataValues.anunciado) {
                     return res.status(400).json({ mensagem: "Serviço já está anunciado" });
                 }
-                await this.servicoDao.anunciarServico(
-                    idServico,
-                    new Date(dataInicioAnuncio),
-                    new Date(dataTerminoAnuncio)
-                );
+                
+                const inicio = dataInicioAnuncio ? new Date(dataInicioAnuncio) : null;
+                const fim = dataTerminoAnuncio ? new Date(dataTerminoAnuncio) : null;
+
+                await this.servicoDao.anunciarServico(idServico, inicio, fim);
+
                 res.status(200).json({ mensagem: "Serviço anunciado com sucesso" });
             } catch (error) {
                 console.error('Erro ao anunciar serviço:', error);
