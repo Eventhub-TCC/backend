@@ -261,6 +261,23 @@ export default class UsuarioController {
         }
     }
 
+    public buscarUsuarioPorId = async (req: Request, res: Response) => {
+        try{
+            const { idUsu } = req.params;
+            console.log('ID do usuário:', idUsu);
+            const usuario: Usuario | null = await this.usuarioDao.buscarUsuarioPorId(idUsu);
+            if(!usuario){
+                res.status(404).json({mensagem: "Usuário não encontrado"});
+                return;
+            }
+            res.status(200).json(usuario);
+        }
+        catch(error){
+            console.error('Erro ao buscar usuario por id', error);
+            res.status(404).json({mensagem: "Erro ao buscar usuário por id"});
+        }
+    }
+
     public deletarUsuario = async (req: AuthenticatedRequest, res: Response) => {
         const transaction = await sequelize.transaction();
         try{
