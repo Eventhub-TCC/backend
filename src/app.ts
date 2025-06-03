@@ -9,6 +9,7 @@ import tipoEventoRoute from './routes/tipoEventoRoutes';
 import conviteRoute from './routes/ConviteRoute';
 import servicoRoute from './routes/servicoRoute';
 import tipoServicoRoute from './routes/tipoServicoRoute';
+import pedidoRoute from './routes/pedidoRoute';
 import { iniciarAgendadores } from './utils/verificarAnuncios';
 
 
@@ -30,6 +31,7 @@ app.use('/users',tipoEventoRoute);
 app.use('/users', conviteRoute);
 app.use('/users',servicoRoute);
 app.use('/users',tipoServicoRoute);
+app.use('/users',pedidoRoute);
 
 iniciarAgendadores();
 sincronizarBanco();
