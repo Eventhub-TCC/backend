@@ -3,6 +3,7 @@ import { sequelize } from "../config/database";
 import Pedido from "../models/Pedido";
 import ItemPedido from "../models/ItemPedido";
 import Evento from "../models/Evento";
+import Servico from "../models/Servico";
 
 export default class PedidoDao {
     public finalizarPedido = async (
@@ -13,7 +14,7 @@ export default class PedidoDao {
             nomeItem: string;
             valorUnitario: number;
             quantidade: number;
-            instrucoes?: string;
+            instrucao?: string;
         }[]
     ) => {
         const t: Transaction = await sequelize.transaction(); //transação para caso algo de errado usar o rollback
@@ -37,7 +38,7 @@ export default class PedidoDao {
                     nomeItem: item.nomeItem,
                     valorUnitario: item.valorUnitario,
                     quantidade: item.quantidade,
-                    instrucoes: item.instrucoes,
+                    instrucao: item.instrucao,
                     valorTotal: subtotal,
                 }, { transaction: t });
             }
@@ -113,5 +114,33 @@ export default class PedidoDao {
     await pedido.save();
     return pedido;
     };
+
+    public listarItensPedido = async (idPedido: number) => {
+            const itens = await ItemPedido.findAll({
+            where: { idPedido: idPedido },
+            attributes: ['idItemPedido', 'idServico', 'nomeItem', 'valorUnitario', 'quantidade', 'instrucao', 'valorTotal'],
+            include: [
+                {
+                model: Servico,
+                attributes: ['imagem1'],
+                }
+            ]
+            });
+        const nomeEvento = await Pedido.findOne({
+            where: { idPedido: idPedido },
+            attributes: ['idEvento'],
+            include: [{
+                model: Evento,
+                as: 'Evento',
+                attributes: ['nomeEvento']
+            }],
+            raw: true,
+        });
+
+        return {
+            itens, 
+            nomeEvento: nomeEvento ? (nomeEvento as { [key: string]: any })['Evento.nomeEvento'] : null
+        };
+    }
 
 }

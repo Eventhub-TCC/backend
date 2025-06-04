@@ -47,4 +47,19 @@ export default class PedidoController {
         }
     }
 
+    public listarItensPedido = async (req: any, res: any) => {
+        const { idPedido } = req.params;
+
+        try {
+            const pedidoItens = await this.pedidoDao.listarItensPedido(Number(idPedido));
+            if (!pedidoItens.itens || pedidoItens.itens.length === 0) {
+                return res.status(200).json({ mensagem: "Nenhum item encontrado para este pedido" });
+            }
+            res.status(200).json(pedidoItens);
+        } catch (error) {
+            console.error("Erro ao listar itens do pedido:", error);
+            res.status(500).json({ mensagem: "Erro interno ao listar itens do pedido" });
+        }
+    }
+
 }
