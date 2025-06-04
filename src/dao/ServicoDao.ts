@@ -1,6 +1,7 @@
 import { Op, Transaction } from "sequelize";
 import Servico from '../models/Servico';
 import Usuario from "../models/Usuario";
+import TipoServico from "../models/TipoServico";
 
 export default class ServicoDao{
     public cadastrarServico = async (idUsuario: string, idTipoServico: number, nomeServico:string, descricaoServico:string, unidadeCobranca: string, valorServico:number, qntMinima: number, qntMaxima:number, imagem1:string, imagem2:string | null, imagem3:string | null,imagem4:string | null, imagem5:string | null, imagem6:string | null, transaction: Transaction | null = null)=>{
@@ -54,6 +55,7 @@ export default class ServicoDao{
             idTipoServico : string,
             unidadeCobranca: string,
             valorServico: string,
+            valorPromoServico: string | null,
             qntMinima: string,
             qntMaxima: string,
             imagem1: string,
@@ -76,6 +78,7 @@ export default class ServicoDao{
           idTipoServico: dadosAtualizados.idTipoServico,
           unidadeCobranca: dadosAtualizados.unidadeCobranca,
           valorServico: dadosAtualizados.valorServico,
+          valorPromoServico: dadosAtualizados.valorPromoServico,
           qntMinima: dadosAtualizados.qntMinima,
           qntMaxima: dadosAtualizados.qntMaxima,
             imagem1: dadosAtualizados.imagem1,
@@ -149,23 +152,38 @@ export default class ServicoDao{
         const dataAtual = new Date();
 
         const servicosAnunciados: Servico[] = await Servico.findAll({
-        where: {
-            anunciado: true,
-            [Op.and]: [
-            {
-                [Op.or]: [
-                { dataInicioAnuncio: { [Op.lte]: dataAtual } },
-                { dataInicioAnuncio: null }
+            where: {
+                anunciado: true,
+                [Op.and]: [
+                {
+                    [Op.or]: [
+                    { dataInicioAnuncio: { [Op.lte]: dataAtual } },
+                    { dataInicioAnuncio: null }
+                    ]
+                },
+                {
+                    [Op.or]: [
+                    { dataFimAnuncio: { [Op.gte]: dataAtual } },
+                    { dataFimAnuncio: null }
+                    ]
+                }
                 ]
             },
-            {
-                [Op.or]: [
-                { dataFimAnuncio: { [Op.gte]: dataAtual } },
-                { dataFimAnuncio: null }
-                ]
-            }
+            attributes: {
+                exclude: ['idUsuario', 'idTipoServico']
+            },
+            include: [
+                {
+                    model: Usuario,
+                    as: 'usuario',
+                    attributes: ['codigoUsu', 'nomeEmpresa', 'fotoEmpresa']
+                },
+                {
+                    model: TipoServico,
+                    as: 'tipoServico',
+                    attributes: ['idTipoServico', 'descricaoTipoServico']
+                }
             ]
-        }
         });
 
         return servicosAnunciados;
