@@ -23,11 +23,8 @@ export default class PedidoController {
 
     public listarPedidos = async (req: any, res: any) => {
         try {
-            const codigoUsu = req.user!.codigoUsu;
+            const codigoUsu = req.user!.id.toString();
             const pedidos = await this.pedidoDao.listarPedidos(codigoUsu);
-            if (pedidos.length === 0) {
-                return res.status(404).json({ mensagem: "Nenhum pedido encontrado" });
-            }
             res.status(200).json(pedidos);
         } catch (error) {
             console.error("Erro ao listar pedidos:", error);

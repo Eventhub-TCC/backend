@@ -5,6 +5,6 @@ import { validarTokenAutenticacao } from "../middlewares/validarToken";
 const route = express.Router();
 const pedidoController = new PedidoController();
 route.post('/pedidos',validarTokenAutenticacao, pedidoController.finalizarPedido);
-route.get('/pedidos', pedidoController.listarPedidos);
+route.get('/listar-pedidos', validarTokenAutenticacao, pedidoController.listarPedidos);
 
 export default route;

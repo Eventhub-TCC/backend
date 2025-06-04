@@ -1,4 +1,4 @@
-import { Transaction } from "sequelize";
+import { col, fn, Transaction } from "sequelize";
 import { sequelize } from "../config/database";
 import Pedido from "../models/Pedido";
 import ItemPedido from "../models/ItemPedido";
@@ -56,17 +56,35 @@ export default class PedidoDao {
 
     public listarPedidos = async (codigoUsu: string) => {
         const pedidos = await Pedido.findAll({
-            where: { codigoUsu },
-            include: [{
-                model: ItemPedido,
-                as: 'itens',
-                required: false
-            }],
-            order: [['dataPedido', 'DESC']]
+            where: { codigoUsu: codigoUsu },
+            attributes: [
+                'idPedido',
+                'codigoUsu',
+                'dataPedido',
+                'valorTotal',
+                [fn('COUNT', col('idItemPedido')), 'quantidadeItens'],
+            ],
+            include: [
+                {
+                    model: ItemPedido,
+                    as: 'ItemPedidos',
+                    attributes: [],
+                    required: false,
+                },
+                {
+                    model: Evento,
+                    as: 'Evento',
+                    attributes: ['nomeEvento'],
+                },
+            ],
+            group: ['Pedido.idPedido', 'idEvento'],
+            order: [['dataPedido', 'DESC']],
+            raw: true,
+            nest: true,
         });
 
         return pedidos;
-    }
+    };
 
     public cancelarPedido = async (idPedido: string) => {
     const pedido = await Pedido.findByPk(idPedido, {
