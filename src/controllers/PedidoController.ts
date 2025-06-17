@@ -6,14 +6,14 @@ export default class PedidoController {
 
     public finalizarPedido = async (req: AuthenticatedRequest, res: any) => {
         try {
-            const { idEvento, itens } = req.body;
+            const { idEvento, localEntrega, dataEntrega, itens } = req.body;
             const codigoUsu = req.user!.id.toString();
 
             if (!Array.isArray(itens) || itens.length === 0) {
                 return res.status(400).json({ mensagem: "Nenhum item informado" });
             }
 
-            const novoPedido = await this.pedidoDao.finalizarPedido(codigoUsu, Number(idEvento), itens);
+            const novoPedido = await this.pedidoDao.finalizarPedido(codigoUsu, Number(idEvento), localEntrega, dataEntrega, itens);
             res.status(201).json(novoPedido);
         } catch (error) {
             console.error("Erro ao criar pedido:", error);

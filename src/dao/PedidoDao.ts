@@ -9,6 +9,8 @@ export default class PedidoDao {
     public finalizarPedido = async (
         codigoUsu: string,
         idEvento: number,
+        localEntrega: string,
+        dataEntrega: Date,
         itens: {
             idServico: string;
             nomeItem: string;
@@ -23,6 +25,8 @@ export default class PedidoDao {
             const pedido = await Pedido.create({ //gravando o pedido no banco sem os itens por enquanto (e sem total)
                 codigoUsu: codigoUsu,
                 idEvento,
+                localEntrega: localEntrega,
+                dataEntrega: dataEntrega,
                 status: 'pendente',
                 dataCriacao: new Date(),
             }, { transaction: t });
