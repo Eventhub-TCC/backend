@@ -86,6 +86,13 @@ export default class ServicoController{
                 qntMinima,
                 qntMaxima,
                 imagensMantidas,
+                servicoCep,
+                servicoEndereco,
+                servicoNumero,
+                servicoComplemento,
+                servicoBairro,
+                servicoCidade,
+                servicoEstado
             } = req.body;
 
             let imagensMantidasLista = imagensMantidas
@@ -133,7 +140,14 @@ export default class ServicoController{
             imagem3,
             imagem4,
             imagem5,
-            imagem6
+            imagem6,
+            servicoCep,
+            servicoEndereco,
+            servicoNumero,
+            servicoComplemento,
+            servicoBairro,
+            servicoCidade,
+            servicoEstado
           });
 
       

@@ -71,7 +71,14 @@ export default class ServicoDao{
             imagem3: string | null,
             imagem4: string | null,
             imagem5: string | null,
-            imagem6: string | null
+            imagem6: string | null,
+            servicoCep: string | null,
+            servicoEndereco: string | null,
+            servicoNumero: string | null,
+            servicoComplemento: string | null,
+            servicoBairro: string | null,
+            servicoCidade: string | null,
+            servicoEstado: string | null
         }
       ) => {
         const servico = await Servico.findByPk(id);
@@ -94,7 +101,14 @@ export default class ServicoDao{
             imagem3: dadosAtualizados.imagem3,
             imagem4: dadosAtualizados.imagem4,
             imagem5: dadosAtualizados.imagem5,
-            imagem6: dadosAtualizados.imagem6
+            imagem6: dadosAtualizados.imagem6,
+            cep:dadosAtualizados.servicoCep,
+            endereco:dadosAtualizados.servicoEndereco,
+            numero:dadosAtualizados.servicoNumero,
+            complemento:dadosAtualizados.servicoComplemento,
+            bairro:dadosAtualizados.servicoBairro,
+            cidade:dadosAtualizados.servicoCidade,
+            estado:dadosAtualizados.servicoEstado,
         });
       
         return servico;
