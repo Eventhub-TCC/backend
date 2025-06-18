@@ -4,6 +4,7 @@ import Pedido from "../models/Pedido";
 import ItemPedido from "../models/ItemPedido";
 import Evento from "../models/Evento";
 import Servico from "../models/Servico";
+import Usuario from "../models/Usuario";
 
 export default class PedidoDao {
     public finalizarPedido = async (
@@ -145,6 +146,58 @@ export default class PedidoDao {
             itens, 
             nomeEvento: nomeEvento ? (nomeEvento as { [key: string]: any })['Evento.nomeEvento'] : null
         };
+    }
+
+    public listarPedidosPrestador = async (codigoUsu: string) => {
+        const pedidos = await Pedido.findAll({
+            attributes: [
+                'idPedido',
+                'dataPedido',
+                [fn('SUM', col('ItemPedidos.valorTotal')), 'valorTotalDoPrestador'],
+                'status',
+                'codigoUsu',
+                'localEntrega',
+                'dataEntrega',
+                [sequelize.fn('COUNT', sequelize.col('ItemPedidos.idItemPedido')), 'quantidadeItens']
+            ],
+            include: [
+                {
+                model: ItemPedido,
+                as: 'ItemPedidos',
+                required: true,
+                attributes: [],
+                include: [
+                    {
+                    model: Servico,
+                    as: 'Servico',
+                    attributes: [],
+                    where: {
+                        idUsuario: codigoUsu
+                    }
+                    }
+                ]
+                },
+                {
+                model: Evento,
+                as: 'Evento',
+                attributes: ['nomeEvento'],
+                include: [
+                    {
+                    model: Usuario,
+                    as: 'Usuario',
+                    attributes: ['nomeUsu']
+                    }
+                ]
+                }
+            ],
+            group: [
+                'Pedido.idPedido',
+            ],
+            order: [['dataPedido', 'DESC']],
+            raw: true,
+            nest: true
+            });
+        return pedidos;
     }
 
 }

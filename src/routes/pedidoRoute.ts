@@ -7,5 +7,6 @@ const pedidoController = new PedidoController();
 route.post('/pedidos',validarTokenAutenticacao, pedidoController.finalizarPedido);
 route.get('/listar-pedidos', validarTokenAutenticacao, pedidoController.listarPedidos);
 route.get('/listar-itens-pedido/:idPedido', validarTokenAutenticacao, pedidoController.listarItensPedido);
+route.get('/listar-pedidos-prestador', validarTokenAutenticacao, pedidoController.listarPedidosPrestador);
 
 export default route;

@@ -62,4 +62,15 @@ export default class PedidoController {
         }
     }
 
+    public listarPedidosPrestador = async (req: any, res: any) => {
+        try {
+            const codigoUsu = req.user!.id.toString();
+            const pedidos = await this.pedidoDao.listarPedidosPrestador(codigoUsu);
+            res.status(200).json(pedidos);
+        } catch (error) {
+            console.error("Erro ao listar pedidos do prestador:", error);
+            res.status(500).json({ mensagem: "Erro interno ao listar pedidos do prestador" });
+        }
+    }
+
 }
