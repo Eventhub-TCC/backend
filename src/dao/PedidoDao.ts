@@ -200,4 +200,74 @@ export default class PedidoDao {
         return pedidos;
     }
 
+    public listarItensPedidoPrestador = async (idPedido: number, codigoUsu: string) => {
+        const itens = await ItemPedido.findAll({
+            where: { idPedido: idPedido },
+            attributes: ['idItemPedido', 'idServico', 'nomeItem', 'valorUnitario', 'quantidade', 'instrucao', 'valorTotal'],
+            include: [
+                {
+                    model: Servico,
+                    as: 'Servico',
+                    attributes: ['imagem1'],
+                    where: { idUsuario: codigoUsu }
+                }
+            ]
+        });
+
+        const pedido = await Pedido.findOne({
+            where: { idPedido: idPedido },
+            attributes: ['idPedido', 'codigoUsu', 'dataPedido', 'valorTotal', 'localEntrega', 'dataEntrega'],
+            include: [
+                {
+                    model: Evento,
+                    as: 'Evento',
+                    attributes: ['nomeEvento'],
+                    include: [
+                        {
+                            model: Usuario,
+                            as: 'Usuario',
+                            attributes: ['nomeUsu', 'telUsu']
+                        }
+                    ]
+                }
+            ],
+            raw: true,
+            nest: true
+        }) as unknown as {
+            idPedido: number;
+            codigoUsu: string;
+            dataPedido: Date;
+            valorTotal: number;
+            localEntrega: string;
+            dataEntrega: Date;
+            Evento: {
+                nomeEvento: string;
+                Usuario: {
+                    nomeUsu: string;
+                    telUsu: string;
+                }
+            }
+        } | null;
+
+        if (!pedido) {
+            throw new Error('Pedido não encontrado');
+        }
+
+        return {
+            itens,
+            pedido: {
+                idPedido: pedido.idPedido,
+                codigoUsu: pedido.codigoUsu,
+                dataPedido: pedido.dataPedido,
+                localEntrega: pedido.localEntrega,
+                dataEntrega: pedido.dataEntrega,
+                nomeEvento: pedido.Evento.nomeEvento,
+                nomeCliente: pedido.Evento.Usuario.nomeUsu,
+                telefoneCliente: pedido.Evento.Usuario.telUsu,
+            }
+        };
+    }
+
+
+
 }
