@@ -12,5 +12,7 @@ export function iniciarAgendadores() {
     } catch (err) {
       console.error('Erro ao desativar anúncios expirados:', err);
     }
+  }, {
+    timezone: 'America/Sao_Paulo'
   });
 }

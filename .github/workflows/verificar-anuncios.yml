@@ -1,0 +1,13 @@
+name: Verificar Anuncios Render
+
+on:
+  schedule:
+    - cron: '55 3 * * *' 
+  workflow_dispatch:
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Acordar o servidor Render
+        run: curl -X GET https://eventhub-backend-7klx.onrender.com
