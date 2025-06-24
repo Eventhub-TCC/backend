@@ -1,5 +1,9 @@
 import Evento from "../models/Evento";
+import puppeteerCore from 'puppeteer-core';
 import puppeteer from 'puppeteer';
+import chromium from 'chrome-aws-lambda';
+
+const producao = process.env.NODE_ENV === 'production';
 
 interface ConvidadoDTO {
     idConvidado: string;
@@ -249,14 +253,16 @@ const gerarListaDeConvidados = async (evento: Evento, convidados: ConvidadoDTO[]
         </html>
     `;
 
-    const navegador = await puppeteer.launch({
-        args: ['--no-sandbox', '--disable-setuid-sandbox']
+    const navegador = await puppeteerCore.launch({
+        args: producao ? chromium.args : ['--no-sandbox', '--disable-setuid-sandbox'],
+        executablePath: producao ? await chromium.executablePath : puppeteer.executablePath(),
+        headless: true,
     });
     const pagina = await navegador.newPage();
     await pagina.setContent(htmlLista, { waitUntil: 'networkidle0' });
 
     const pdf = await pagina.pdf({
-        format: 'A4',
+        format: 'a4',
         printBackground: true
     })
     await navegador.close();
