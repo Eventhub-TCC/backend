@@ -5,8 +5,8 @@ import TipoServicoDao from "../dao/TipoServicoDao";
 import { deletarImagemServidor } from "../utils/deletarImagemServidor";
 
 export default class ServicoController{
-    private servicoDao = new ServicoDao()
-    private tipoServicoDao = new TipoServicoDao()
+    private readonly servicoDao = new ServicoDao()
+    private readonly tipoServicoDao = new TipoServicoDao()
 
     public cadastrarServico = async (req:AuthenticatedRequest, res:Response)=>{
         try{
@@ -101,16 +101,16 @@ export default class ServicoController{
             }
 
             if (imagensMantidasLista.length === 0) {
-                imagensAntigas.map((imagem) => {
+                imagensAntigas.forEach((imagem) => {
                     if (imagem) {
                         deletarImagemServidor(imagem);
                     }
                 });
             }
 
-            imagensMantidasLista.map((imagem:string)=>{
+            imagensMantidasLista.forEach((imagem:string)=>{
                 const imagemAntigasExcluidas = imagensAntigas.filter((img) => img !== imagem);
-                imagemAntigasExcluidas.map((imagem)=>{
+                imagemAntigasExcluidas.forEach((imagem)=>{
                     deletarImagemServidor(imagem);
                 })
                 
@@ -119,11 +119,11 @@ export default class ServicoController{
             const arquivos = req.files as Express.Multer.File[]
             const imagens = [...imagensMantidasLista,...arquivos.map((file)=> file.filename)]
                 const imagem1 = imagens[0]
-                const imagem2 = imagens[1] ? imagens[1] : null
-                const imagem3 = imagens[2] ? imagens[2] : null
-                const imagem4 = imagens[3] ? imagens[3] : null
-                const imagem5 = imagens[4] ? imagens[4] : null
-                const imagem6 = imagens[5] ? imagens[5] : null
+                const imagem2 = imagens[1] ?? null
+                const imagem3 = imagens[2] ?? null
+                const imagem4 = imagens[3] ?? null
+                const imagem5 = imagens[4] ?? null
+                const imagem6 = imagens[5] ?? null
                 console.log('imagens', imagens);
         
           const servicoAtualizado = await this.servicoDao.editarServico(Number(idServico), {
@@ -132,7 +132,7 @@ export default class ServicoController{
             idTipoServico,
             unidadeCobranca,
             valorServico,
-            valorPromoServico: valorPromoServico || null,
+            valorPromoServico: valorPromoServico ?? null,
             qntMinima,
             qntMaxima,
             imagem1,
@@ -183,7 +183,7 @@ export default class ServicoController{
                         servico.dataValues.imagem5,
                         servico.dataValues.imagem6
                     ]
-                    imagens.map((imagem)=>{
+                    imagens.forEach((imagem)=>{
                         if(imagem){
                             deletarImagemServidor(imagem)
                         }

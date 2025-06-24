@@ -96,7 +96,7 @@ export default class UsuarioController {
             const tipoUsuario: UsuarioTipo[] = await this.usuarioTipoDao.buscarUsuarioTipoPorId(usuario.codigoUsu);
             const tipo: string[] = [];
 
-            tipoUsuario.map(({dataValues}) => {
+            tipoUsuario.forEach(({dataValues}) => {
                 if(dataValues.idTipo === 1){
                     tipo.push('organizador');
                 }
@@ -348,7 +348,7 @@ export default class UsuarioController {
             if (organizador || prestador) {
                 const novosTipos: UsuarioTipo[] = await this.usuarioTipoDao.buscarUsuarioTipoPorId(usuario.codigoUsu, transaction);
                 const tipo: string[] = [];
-                novosTipos.map(({dataValues}) => {
+                novosTipos.forEach(({dataValues}) => {
                         if(dataValues.idTipo === 1){
                             tipo.push('organizador');
                         }
@@ -387,7 +387,7 @@ export default class UsuarioController {
             if(usuario.fotoUsu){
                 deletarImagemServidor(usuario.fotoUsu)
             }
-            usuario.fotoUsu = req.file?.filename || null;
+            usuario.fotoUsu = req.file?.filename ?? null;
             await this.usuarioDao.atualizarUsuario(usuario, transaction);
             console.log('Usuário após salvar:', usuario);
             await transaction.commit();
@@ -413,7 +413,7 @@ export default class UsuarioController {
             if(usuario.fotoEmpresa){
                 deletarImagemServidor(usuario.fotoEmpresa)
             }
-            usuario.fotoEmpresa = req.file?.filename || null;
+            usuario.fotoEmpresa = req.file?.filename ?? null;
             await this.usuarioDao.atualizarUsuario(usuario, transaction);
             console.log('Usuário após salvar:', usuario);
             await transaction.commit();

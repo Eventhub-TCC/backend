@@ -9,7 +9,7 @@ const {
     DB_PORT
 } = process.env;
 
-const sequelize = new Sequelize(DB_DATABASE!, DB_USER!, DB_PASSWORD!, {
+const sequelize = new Sequelize(DB_DATABASE!, DB_USER!, DB_PASSWORD, {
     host: DB_HOST,
     port: Number(DB_PORT),
     dialect: 'mysql',
@@ -47,7 +47,7 @@ const inicializarComDados = async () => {
         "Sonorização", "Buffet", "Cerimonial", "Coquetel", "DJ", "Espaço para Eventos"
     ];
 
-    tiposDeUsuario.map(async (tipo, index) => {
+    tiposDeUsuario.forEach(async (tipo, index) => {
         await sequelize.models.Tipo.findOrCreate({
             where:{
                 idTipo: index + 1
@@ -59,7 +59,7 @@ const inicializarComDados = async () => {
         });
     });
 
-    tiposDeEvento.map(async (tipo, index) => {
+    tiposDeEvento.forEach(async (tipo, index) => {
         await sequelize.models.TipoEvento.findOrCreate({
             where:{
                 idTipoEvento: index + 1
@@ -70,7 +70,7 @@ const inicializarComDados = async () => {
         });
     });
 
-    tiposDeServicos.map(async (tipo, index) => {
+    tiposDeServicos.forEach(async (tipo, index) => {
         await sequelize.models.TipoServico.findOrCreate({
             where:{
                 idTipoServico: index + 1
