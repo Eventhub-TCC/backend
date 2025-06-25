@@ -10,7 +10,6 @@ export default class ConviteDao {
         idEvento
       },
     });
-    console.log("convites", convites);
     return convites;
   }
 
