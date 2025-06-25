@@ -19,12 +19,13 @@ interface ConvidadoDTO {
     }>;
 }
 
-const { URL_BACKEND, SERVER_PORT } = process.env;
+const { URL_BACKEND, SERVER_PORT, NODE_ENV } = process.env;
 
 const gerarListaDeConvidados = async (evento: Evento, convidados: ConvidadoDTO[]) => {
     const qtdConvidados = convidados.length;
     const qtdAcompanhantes = convidados.reduce((acumulador, convidado) => acumulador + convidado.acompanhantes.length, 0);
-
+    const imgLogo = NODE_ENV === 'production' ? `${URL_BACKEND}` : `${URL_BACKEND}:${SERVER_PORT}`;
+    
     const htmlLista = `
         <!DOCTYPE html>
         <html lang="pt-br">
@@ -165,7 +166,7 @@ const gerarListaDeConvidados = async (evento: Evento, convidados: ConvidadoDTO[]
         </head>
         <body>
             <div class="container-informacoes">
-                <img src="${URL_BACKEND}:${SERVER_PORT}/logo_eventhub.png" alt="Logo EventHub" class="logo-eventhub">
+                <img src="${imgLogo}/logo_eventhub.png" alt="Logo EventHub" class="logo-eventhub">
                 <h1>Lista de convidados</h1>
                 <div class="container-informacoes-evento">
                     <div class="container-separador">

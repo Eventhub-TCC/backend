@@ -21,8 +21,9 @@ RUN apt-get update && apt-get install -y \
   --no-install-recommends && \
   apt-get clean && rm -rf /var/lib/apt/lists/*
 WORKDIR /user/app
-COPY package*.json .
-RUN npm install
+COPY package*.json ./
+RUN npm ci
 COPY . .
+RUN npm run build
 EXPOSE 3000
-CMD [ "npm", "run", "start:dev" ]
+CMD [ "node", "dist/app.js" ]
