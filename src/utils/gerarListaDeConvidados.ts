@@ -250,21 +250,11 @@ const gerarListaDeConvidados = async (evento: Evento, convidados: ConvidadoDTO[]
     `;
 
     const navegador = await puppeteer.launch({
-        headless: true,
-        args: [
-            '--disable-setuid-sandbox',
-            '--no-sandbox',
-            '--no-zygote',
-            '--headless=new'
-        ],
-        executablePath: 
-            process.env.NODE_ENV === 'production' 
-                ? process.env.PUPPETEER_EXECUTABLE_PATH 
-                : puppeteer.executablePath(),
+        args: ['--no-sandbox', '--disable-setuid-sandbox']
     });
     const pagina = await navegador.newPage();
     await pagina.setContent(htmlLista, { waitUntil: 'networkidle0' });
-    console.log(navegador)
+
     const pdf = await pagina.pdf({
         format: 'A4',
         printBackground: true
