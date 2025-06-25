@@ -132,7 +132,7 @@ export default class ServicoController{
             idTipoServico,
             unidadeCobranca,
             valorServico,
-            valorPromoServico: valorPromoServico ?? null,
+            valorPromoServico: valorPromoServico || null,
             qntMinima,
             qntMaxima,
             imagem1,
