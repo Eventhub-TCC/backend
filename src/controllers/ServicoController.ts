@@ -27,10 +27,28 @@ export default class ServicoController{
         }
     }
 
-    public obterServico = async (req: Request, res: Response) =>{
+    public obterServico = async (req: AuthenticatedRequest, res: Response) =>{
         try{
             const { idServico } = req.params;
-            const servico = await this.servicoDao.buscarServicoPorId(idServico);
+            const idUsuario = req.user!.id.toString();
+            const servico = await this.servicoDao.buscarServicoPorId(idServico, idUsuario);
+            if (!servico){
+                res.status(404).json({mensagem: "Serviço não encontrado"});
+                return;
+            }
+            const tipoServico = await this.tipoServicoDao.buscarTipoServicoPorId(servico.dataValues.idTipoServico);
+            res.status(200).json({...servico.dataValues, tipoServico: tipoServico?.dataValues});
+        }
+        catch(error){
+            console.error('Erro ao buscar serviço', error);
+            res.status(500).json({mensagem: "Erro ao buscar serviço"});
+        }
+    }
+
+        public obterServicoAnunciado = async (req: Request, res: Response) =>{
+        try{
+            const { idServico } = req.params;
+            const servico = await this.servicoDao.buscarServicoAnunciadoPorId(idServico);
             if (!servico){
                 res.status(404).json({mensagem: "Serviço não encontrado"});
                 return;
@@ -61,11 +79,12 @@ export default class ServicoController{
         }
     }
 
-    public editarServico = async (req: Request, res: Response) =>{
+    public editarServico = async (req: AuthenticatedRequest, res: Response) =>{
         try {
             const { idServico } = req.params;
+            const idUsuario = req.user!.id.toString();
 
-            const servicoAntigo = await this.servicoDao.buscarServicoPorId(idServico);
+            const servicoAntigo = await this.servicoDao.buscarServicoPorId(idServico, idUsuario);
             const imagensAntigas = [
                 servicoAntigo?.dataValues.imagem1,
                 servicoAntigo?.dataValues.imagem2,
@@ -165,10 +184,11 @@ export default class ServicoController{
         }
       };
 
-        public deletarServico = async (req: Request, res: Response) => {
+        public deletarServico = async (req: AuthenticatedRequest, res: Response) => {
             try{
                 const { idServico } = req.params; 
-                const servico = await this.servicoDao.buscarServicoPorId(idServico)
+                const idUsuario = req.user!.id.toString();
+                const servico = await this.servicoDao.buscarServicoPorId(idServico, idUsuario)
                 if (!servico){
                     const mensagem = "Serviço não encontrado";
                     res.status(404).json({mensagem});
@@ -198,11 +218,12 @@ export default class ServicoController{
             }
         }
 
-        public anunciarServico = async (req: Request, res: Response) => {
+        public anunciarServico = async (req: AuthenticatedRequest, res: Response) => {
             try {
                 const { idServico } = req.params;
                 const { dataInicioAnuncio, dataTerminoAnuncio } = req.body;
-                const servico = await this.servicoDao.buscarServicoPorId(idServico);
+                const idUsuario = req.user!.id.toString();
+                const servico = await this.servicoDao.buscarServicoPorId(idServico, idUsuario);
                 if (!servico) {
                     return res.status(404).json({ mensagem: "Serviço não encontrado" });
                 }
@@ -222,10 +243,11 @@ export default class ServicoController{
             }
         }
 
-        public encerrarAnuncioServico = async (req: Request, res: Response) => {
+        public encerrarAnuncioServico = async (req: AuthenticatedRequest, res: Response) => {
             try {
                 const { idServico } = req.params;
-                const servico = await this.servicoDao.buscarServicoPorId(idServico);
+                const idUsuario = req.user!.id.toString();
+                const servico = await this.servicoDao.buscarServicoPorId(idServico, idUsuario);
                 if (!servico) {
                     return res.status(404).json({ mensagem: "Serviço não encontrado" });
                 }

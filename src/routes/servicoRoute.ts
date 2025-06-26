@@ -9,6 +9,7 @@ const servicoController = new ServicoController()
 
 route.post('/services', validarTokenAutenticacao, upload.array('files',6) ,servicoController.cadastrarServico)
 route.get('/:idUsuario/services/:idServico', validarTokenAutenticacao, servicoController.obterServico);
+route.get('/services/marketplace/:idServico', validarTokenAutenticacao, servicoController.obterServicoAnunciado);
 route.get('/services', validarTokenAutenticacao, servicoController.listarServicos);
 route.put('/services/:idServico', validarTokenAutenticacao, upload.array("files"), async (req, res) => {
     await servicoController.editarServico(req, res);

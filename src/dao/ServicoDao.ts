@@ -32,11 +32,18 @@ export default class ServicoDao{
         return servico;
     }
 
-    public buscarServicoPorId = async (idServico: string):Promise<Servico | null> =>{
-        const servico: Servico | null = await Servico.findByPk(idServico);
+    public buscarServicoPorId = async (idServico: string, idUsuario: string):Promise<Servico | null> =>{
+        const servico = await Servico.findOne({
+            where: { idServico, idUsuario}
+        });
         return servico;
     }
     
+    public buscarServicoAnunciadoPorId = async (idServico: string):Promise<Servico | null> =>{
+        const servico: Servico | null = await Servico.findByPk(idServico);
+        return servico;
+    }
+
     public listarServicos = async (emailUsu: string):Promise<Servico[]> =>{
         const usuario: Usuario | null = await Usuario.findOne({
             where: {
