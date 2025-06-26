@@ -50,10 +50,12 @@ export default class EventoController {
         }
     }
 
-    public buscarEventoporId = async (req: Request, res: Response) =>{
+    public buscarEventoporId = async (req: AuthenticatedRequest, res: Response) =>{
         try{
             const { idEvento } = req.params;
-            const evento = await this.eventoDao.buscarEventoporId(idEvento);
+            const codigoUsu = req.user!.id.toString();
+            const evento = await this.eventoDao.buscarEventoPorId(idEvento, codigoUsu);
+            
             if (!evento){
                 const mensagem = "Evento não encontrado";
                 res.status(404).json({mensagem});
@@ -129,10 +131,11 @@ export default class EventoController {
       };
     
 
-    public deletarEvento = async (req: Request, res: Response) => {
+    public deletarEvento = async (req: AuthenticatedRequest, res: Response) => {
         try{
             const { idEvento } = req.params; 
-            const evento = await this.eventoDao.buscarEventoporId(idEvento)
+            const codigoUsu = req.user!.id.toString();
+            const evento = await this.eventoDao.buscarEventoPorId(idEvento, codigoUsu)
             if (!evento){
                 const mensagem = "Evento não encontrado";
                 res.status(404).json({mensagem});
@@ -151,11 +154,12 @@ export default class EventoController {
         }
     }
 
-    public atualizarQtdMaxAcompanhantes = async (req: Request, res: Response) => {
+    public atualizarQtdMaxAcompanhantes = async (req: AuthenticatedRequest, res: Response) => {
         try {
             const { idEvento } = req.params;
             const { qtdMaxAcompanhantes } = req.body;
-            const evento = await this.eventoDao.buscarEventoporId(idEvento);
+            const codigoUsu = req.user!.id.toString();
+            const evento = await this.eventoDao.buscarEventoPorId(idEvento, codigoUsu);
             if (!evento) {
                 return res.status(404).json({ message: 'Evento não encontrado' });
             }

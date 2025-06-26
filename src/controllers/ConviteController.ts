@@ -5,6 +5,7 @@ import { Transaction } from 'sequelize';
 import AcompanhanteDao from '../dao/AcompanhanteDao';
 import ConvidadoDao from '../dao/ConvidadoDao';
 import EventoDao from '../dao/EventoDao';
+import { AuthenticatedRequest } from '../types/AuthenticatedRequest';
 
 export default class ConviteController {
 
@@ -27,10 +28,11 @@ export default class ConviteController {
     }
   };
 
-  public gerarConvite = async (req: Request, res: Response) => {
+  public gerarConvite = async (req: AuthenticatedRequest, res: Response) => {
     try {
       const { idEvento } = req.params;
       const { qtdMaxAcompanhantes, qtdMaxAcompanhantesEvento } = req.body;
+      const codigoUsu = req.user!.id.toString();
 
       if (!idEvento) {
         return res.status(400).json({ mensagem: 'ID do evento é obrigatório.' });
@@ -41,7 +43,7 @@ export default class ConviteController {
       }
 
       if(qtdMaxAcompanhantesEvento){
-        const evento = await this.eventoDao.buscarEventoporId(idEvento);
+        const evento = await this.eventoDao.buscarEventoPorId(idEvento, codigoUsu);
         if (!evento) {
           return res.status(404).json({ mensagem: 'Evento não encontrado.' });
         }

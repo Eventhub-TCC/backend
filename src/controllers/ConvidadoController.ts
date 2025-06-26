@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import ConvidadoDao from "../dao/ConvidadoDao";
 import EventoDao from '../dao/EventoDao';
 import gerarListaDeConvidados from '../utils/gerarListaDeConvidados';
+import { AuthenticatedRequest } from '../types/AuthenticatedRequest';
 
 export default class ConvidadoController {
 
@@ -50,11 +51,12 @@ export default class ConvidadoController {
     }
   };
 
-  public gerarListaConvidados = async (req: Request, res: Response) => {
+  public gerarListaConvidados = async (req: AuthenticatedRequest, res: Response) => {
     const { idEvento } = req.params;
+    const codigoUsu = req.user!.id.toString();
 
     try {
-      const evento = await this.eventoDao.buscarEventoporId(idEvento);
+      const evento = await this.eventoDao.buscarEventoPorId(idEvento, codigoUsu);
       if(!evento) {
         return res.status(404).json({ mensagem: 'Evento não encontrado' });
       }

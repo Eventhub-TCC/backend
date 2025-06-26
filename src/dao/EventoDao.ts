@@ -43,8 +43,10 @@ export default class EventoDao{
         return eventos;
     }
 
-    public buscarEventoporId = async (idEvento: string):Promise<Evento | null> =>{
-        const evento: Evento | null = await Evento.findByPk(idEvento);
+    public buscarEventoPorId = async (idEvento: string, codigoUsu: string):Promise<Evento | null> =>{
+        const evento = await Evento.findOne({
+            where: { idEvento, idUsuario: codigoUsu }
+            });
         return evento;
     }
 
